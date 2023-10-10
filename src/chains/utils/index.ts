@@ -43,3 +43,15 @@ export type {
   OptimismTransactionReceipt,
   OptimismTransactionReceiptOverrides,
 } from '../optimism/types.js'
+
+export { formattersZkSync } from '../zksync/formatters.js'
+export type {
+  ZkSyncBlock,
+  ZkSyncBlockOverrides,
+  ZkSyncRpcTransaction,
+  ZkSyncRpcTransactionReceipt,
+  ZkSyncRpcTransactionReceiptOverrides,
+  ZkSyncTransaction,
+  ZkSyncTransactionReceipt,
+  ZkSyncTransactionReceiptOverrides,
+} from '../zksync/types.js'
