@@ -3,14 +3,13 @@ import type { Address } from 'abitype'
 import type { Block, BlockTag } from '../../types/block.js'
 import type { FeeValuesEIP1559 } from '../../types/fee.js'
 import type { Log as Log_ } from '../../types/log.js'
-// TODO: Not sure if fee is needed, need to generate different transactions types.
 import type { Hex } from '../../types/misc.js'
 
 import type {
   Index,
   Quantity,
   RpcBlock,
-  RpcTransaction as RpcTransaction_,
+  RpcTransaction,
   RpcTransactionReceipt,
   RpcTransactionRequest as RpcTransactionRequest_,
   TransactionType,
@@ -21,6 +20,9 @@ import type {
   TransactionReceipt,
   TransactionRequest as TransactionRequest_,
   TransactionRequestBase,
+  TransactionSerializable,
+  TransactionSerializableBase,
+  TransactionSerialized,
 } from '../../types/transaction.js'
 
 // Types
@@ -45,7 +47,8 @@ type L2ToL1Log = {
   logIndex: number
 }
 
-type Eip712Meta = {
+// TODO: We might not need this.
+export type Eip712Meta = {
   gasPerPubdata?: string
   customSignature?: Hex
   paymasterParams?: {
@@ -55,18 +58,19 @@ type Eip712Meta = {
   factoryDeps?: Hex[]
 }
 
+//
 // Block
+//
 
-// TODO: Overrides in other chains doesn't have `null`, why compiler complains in the tests?
+// https://era.zksync.io/docs/api/js/types.html#block
 export type ZkSyncBlockOverrides = {
-  // TODO: Do we need `stateRoot`
-  l1BatchNumber: Hex | null
-  l1BatchTimestamp: Hex | null
+  l1BatchNumber: Hex
+  l1BatchTimestamp: Hex
 }
 
 export type ZkSyncRpcBlockOverrides = {
-  l1BatchNumber: Hex | null
-  l1BatchTimestamp: Hex | null
+  l1BatchNumber: Hex
+  l1BatchTimestamp: Hex
 }
 export type ZkSyncRpcBlock<
   TBlockTag extends BlockTag = BlockTag,
@@ -78,7 +82,6 @@ export type ZkSyncRpcBlock<
 > &
   ZkSyncRpcBlockOverrides
 
-// Celo chain uses NeverBy while Optimism doesn't. Not sure yet about the logic.
 export type ZkSyncBlock<
   TIncludeTransactions extends boolean = boolean,
   TBlockTag extends BlockTag = BlockTag,
@@ -94,18 +97,6 @@ export type ZkSyncBlock<
 // Transaction
 //
 
-type Transaction<TPending extends boolean = boolean> = Transaction_<
-  bigint,
-  number,
-  TPending
-> & {
-  gasPerPubdata?: string
-  customSignature?: Hex
-  paymaster?: Hex
-  paymasterInput?: Hex
-  factoryDeps?: Hex[]
-}
-
 // https://era.zksync.io/docs/reference/concepts/transactions.html#priority-0xff
 type TransactionPriority<TPending extends boolean = boolean> = TransactionBase<
   bigint,
@@ -113,7 +104,7 @@ type TransactionPriority<TPending extends boolean = boolean> = TransactionBase<
   TPending
 > &
   FeeValuesEIP1559 & {
-    type: '0xff'
+    type: 'priority'
   }
 
 type TransactionEIP712<TPending extends boolean = boolean> = TransactionBase<
@@ -122,16 +113,37 @@ type TransactionEIP712<TPending extends boolean = boolean> = TransactionBase<
   TPending
 > &
   FeeValuesEIP1559 & {
-    type: '0x71'
+    type: 'eip712'
   }
+
+type Transaction<TPending extends boolean = boolean> = Transaction_<
+  bigint,
+  number,
+  TPending
+>
 
 export type ZkSyncTransaction<TPending extends boolean = boolean> =
   | Transaction<TPending>
   | TransactionPriority<TPending>
   | TransactionEIP712<TPending>
 
+// RPC
+export type RpcTransactionPriority<TPending extends boolean = boolean> =
+  TransactionBase<Quantity, Index, TPending> &
+    FeeValuesEIP1559<Quantity> & {
+      type: '0xff'
+    }
+
+export type RpcTransactionEIP712<TPending extends boolean = boolean> =
+  TransactionBase<Quantity, Index, TPending> &
+    FeeValuesEIP1559<Quantity> & {
+      type: '0x71'
+    }
+
 export type ZkSyncRpcTransaction<TPending extends boolean = boolean> =
-  RpcTransaction<TPending>
+  | RpcTransaction<TPending>
+  | RpcTransactionPriority<TPending>
+  | RpcTransactionEIP712<TPending>
 
 //
 // Transaction Request
@@ -159,24 +171,9 @@ export type ZkSyncTransactionRequest =
   | TransactionRequest
   | TransactionRequestEIP712
 
-export type RpcTransaction<TPending extends boolean = boolean> =
-  RpcTransaction_<TPending> & {
-    customData: Eip712Meta
-  }
-
-/*type RpcTransactionRequest = RpcTransactionRequest_ & {
-  // When sending to RPC we need to add into this field.
-  customData?: Eip712Meta
-  // To ensure the server recognizes EIP-712 transactions, the transaction_type 
-  // field is equal to 113. The number 712 cannot be used as it has to be one byte long.
-  //transaction_type: 113
-}*/
-
-// TODO: Does it need to use transaction request base?
 // https://era.zksync.io/docs/reference/concepts/transactions.html#eip-712-0x71
 type RpcTransactionRequestEIP712 = TransactionRequestBase<Quantity, Index> &
   Partial<FeeValuesEIP1559<Quantity>> & {
-    customData: Eip712Meta
     type?: '0x71'
   }
 
@@ -184,7 +181,7 @@ export type ZkSyncRpcTransactionRequest =
   | RpcTransactionRequest_
   | RpcTransactionRequestEIP712
 
-export type ZkSyncTransactionType = TransactionType | 'eip712'
+export type ZkSyncTransactionType = TransactionType | 'eip712' | 'priority'
 
 //
 // Transaction Receipt
@@ -202,7 +199,6 @@ export type ZkSyncRpcTransactionReceipt = RpcTransactionReceipt &
 
 // https://era.zksync.io/docs/api/js/types.html#transactionreceipt
 export type ZkSyncTransactionReceiptOverrides = {
-  // TODO: Add fields from providers.TransactionReceipt? Or are they in Transaction Receipt?
   l1BatchNumber: bigint | null
   l1BatchTxIndex: bigint | null
   logs: Log[]
@@ -210,3 +206,37 @@ export type ZkSyncTransactionReceiptOverrides = {
 }
 export type ZkSyncTransactionReceipt = TransactionReceipt &
   ZkSyncTransactionReceiptOverrides
+
+//
+// Serializers
+//
+
+export type ZkSyncTransactionSerializable =
+  | TransactionSerializable
+  | TransactionSerializableEIP712
+
+export type ZkSyncTransactionSerialized<
+  TType extends ZkSyncTransactionType = 'eip1559',
+> = TransactionSerialized<TType> | TransactionSerializedEIP712
+
+export type TransactionSerializableEIP712<
+  TQuantity = bigint,
+  TIndex = number,
+> = TransactionSerializableBase<TQuantity, TIndex> &
+  FeeValuesEIP1559<TQuantity> & {
+    from: Hex
+    maxFeePerGas?: TQuantity
+    maxPriorityFeePerGas?: TQuantity
+    gasPerPubdata?: bigint
+    paymaster?: Address
+    factoryDeps?: Hex[]
+    paymasterInput?: Hex
+    customSignature?: Hex
+    chainId: number
+    // Should `gasLimit` be already be available? I can only see in block info
+    // but we need this for EIP712 serialization. Maybe it is gas?
+    // gasLimit: string
+    type?: 'eip712'
+  }
+
+export type TransactionSerializedEIP712 = `0x71${string}`

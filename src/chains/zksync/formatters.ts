@@ -31,16 +31,15 @@ export const formattersZkSync = {
     } {
       const transactions = args.transactions?.map((transaction) => {
         if (typeof transaction === 'string') return transaction
-        return {
-          ...formatTransaction(transaction as RpcTransaction),
-          gasPerPubdata: transaction.customData?.gasPerPubdata,
-          customSignature: transaction.customData?.customSignature,
-          paymaster: transaction.customData?.paymasterParams?.paymaster,
-          paymasterInput:
-            transaction.customData?.paymasterParams?.paymasterInput,
-          factoryDeps: transaction.customData?.factoryDeps,
-        } as ZkSyncTransaction
-        // TODO: Add support for EIP712 in here due to type?
+        const formatted = formatTransaction(
+          transaction as RpcTransaction,
+        ) as ZkSyncTransaction
+        if (formatted.typeHex === '0x71') {
+          formatted.type = 'eip712'
+        } else if (formatted.typeHex === '0xff') {
+          formatted.type = 'priority'
+        }
+        return formatted
       }) as Hash[] | ZkSyncTransaction[]
       return {
         l1BatchNumber: args.l1BatchNumber,
@@ -51,14 +50,13 @@ export const formattersZkSync = {
   }),
   transaction: /*#__PURE__*/ defineTransaction({
     format(args: ZkSyncRpcTransaction): ZkSyncTransaction {
-      // TODO: Add support for EIP712 in here due to type?
-      return {
-        gasPerPubdata: args.customData?.gasPerPubdata,
-        customSignature: args.customData?.customSignature,
-        paymaster: args.customData?.paymasterParams?.paymaster,
-        paymasterInput: args.customData?.paymasterParams?.paymasterInput,
-        factoryDeps: args.customData?.factoryDeps,
-      } as ZkSyncTransaction
+      const transaction = {} as ZkSyncTransaction
+      if (args.type === '0x71') {
+        transaction.type = 'eip712'
+      } else if (args.type === '0xff') {
+        transaction.type = 'priority'
+      }
+      return transaction
     },
   }),
   // https://era.zksync.io/docs/api/js/types.html#transactionreceipt
@@ -81,25 +79,10 @@ export const formattersZkSync = {
     },
   }),
   transactionRequest: /*#__PURE__*/ defineTransactionRequest({
-    exclude: [
-      'customSignature',
-      'factoryDeps',
-      'gasPerPubdata',
-      'paymaster',
-      'paymasterInput',
-    ],
     format(args: ZkSyncTransactionRequest): ZkSyncRpcTransactionRequest {
-      const request = {
-        customData: {
-          gasPerPubdata: args.gasPerPubdata,
-          factoryDeps: args.factoryDeps,
-          customSignature: args.customSignature,
-          paymasterParams: {
-            paymaster: args.paymaster,
-            paymasterInput: args.paymasterInput,
-          },
-        },
-      } as ZkSyncRpcTransactionRequest
+      const request = {} as ZkSyncRpcTransactionRequest
+      // TODO: Do we need to sign the request here?
+      console.log('TODO: Do we need to sign the request here?')
       if (args.type === 'eip712') request.type = '0x71'
       return request
     },

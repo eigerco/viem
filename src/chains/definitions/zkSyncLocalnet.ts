@@ -2,26 +2,20 @@ import { defineChain } from '../../utils/chain.js'
 import { formattersZkSync } from '../zksync/formatters.js'
 import { serializersZkSync } from '../zksync/serializers.js'
 
-export const zkSyncTestnet = /*#__PURE__*/ defineChain(
+export const zkSyncLocalnet = /*#__PURE__*/ defineChain(
   {
-    id: 280,
-    name: 'zkSync Era Testnet',
-    network: 'zksync-era-testnet',
+    id: 270,
+    name: 'zkSync Era Localnet',
+    network: 'zksync-era-localnet',
     nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
     rpcUrls: {
       default: {
-        http: ['https://testnet.era.zksync.dev'],
-        webSocket: ['wss://testnet.era.zksync.dev/ws'],
+        http: ['http://127.0.0.1:3050'],
+        webSocket: ['ws://127.0.0.1:3051/ws'],
       },
       public: {
-        http: ['https://testnet.era.zksync.dev'],
-        webSocket: ['wss://testnet.era.zksync.dev/ws'],
-      },
-    },
-    blockExplorers: {
-      default: {
-        name: 'zkExplorer',
-        url: 'https://goerli.explorer.zksync.io',
+        http: ['http://127.0.0.1:3050'],
+        webSocket: ['ws://127.0.0.1:3051/ws'],
       },
     },
     contracts: {
