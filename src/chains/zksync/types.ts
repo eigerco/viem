@@ -4,11 +4,11 @@ import type { Block, BlockTag } from '../../types/block.js'
 import type { FeeValuesEIP1559 } from '../../types/fee.js'
 import type { Log as Log_ } from '../../types/log.js'
 import type { Hex } from '../../types/misc.js'
-
 import type {
   Index,
   Quantity,
   RpcBlock,
+  RpcLog as RpcLog_,
   RpcTransaction,
   RpcTransactionReceipt,
   RpcTransactionRequest as RpcTransactionRequest_,
@@ -25,26 +25,59 @@ import type {
   TransactionSerialized,
 } from '../../types/transaction.js'
 
+import type { Abi, AbiEvent } from 'abitype'
+
 // Types
 // https://era.zksync.io/docs/api/js/types.html
 
-type Log = Log_ & {
-  // TOOD: Changing this should affect the tests, but it doesn't.
-  l1BatchNumber: number
+export type Log<
+  TQuantity = bigint,
+  TIndex = number,
+  TPending extends boolean = boolean,
+  TAbiEvent extends AbiEvent | undefined = undefined,
+  TStrict extends boolean | undefined = undefined,
+  TAbi extends Abi | readonly unknown[] | undefined = TAbiEvent extends AbiEvent
+    ? [TAbiEvent]
+    : undefined,
+  TEventName extends string | undefined = TAbiEvent extends AbiEvent
+    ? TAbiEvent['name']
+    : undefined,
+> = Log_<TQuantity, TIndex, TPending, TAbiEvent, TStrict, TAbi, TEventName> & {
+  // TODO: Changing this should affect the tests, but it doesn't.
+  l1BatchNumber: bigint
 }
 
-type L2ToL1Log = {
-  blockNumber: number
+export type RpcLog = RpcLog_ & {
+  // Ignored for now, I can't make type working.
+  //l1BatchNumber: Hex
+}
+
+export type L2ToL1Log = {
+  blockNumber: bigint
   blockHash: string
-  l1BatchNumber: number
-  transactionIndex: number
-  shardId: number
+  l1BatchNumber: bigint
+  transactionIndex: bigint
+  shardId: bigint
   isService: boolean
   sender: string
   key: string
   value: string
   transactionHash: string
-  logIndex: number
+  logIndex: bigint
+}
+
+export type RpcL2ToL1Log = {
+  blockNumber: Hex
+  blockHash: Hex
+  l1BatchNumber: Hex
+  transactionIndex: Hex
+  shardId: Hex
+  isService: boolean
+  sender: Hex
+  key: Hex
+  value: Hex
+  transactionHash: Hex
+  logIndex: Hex
 }
 
 // TODO: We might not need this.
@@ -58,19 +91,17 @@ export type Eip712Meta = {
   factoryDeps?: Hex[]
 }
 
-//
 // Block
-//
-
 // https://era.zksync.io/docs/api/js/types.html#block
+
 export type ZkSyncBlockOverrides = {
   l1BatchNumber: Hex
-  l1BatchTimestamp: Hex
+  l1BatchTimestamp: Hex | null
 }
 
 export type ZkSyncRpcBlockOverrides = {
   l1BatchNumber: Hex
-  l1BatchTimestamp: Hex
+  l1BatchTimestamp: Hex | null
 }
 export type ZkSyncRpcBlock<
   TBlockTag extends BlockTag = BlockTag,
@@ -97,7 +128,6 @@ export type ZkSyncBlock<
 // Transaction
 //
 
-// https://era.zksync.io/docs/reference/concepts/transactions.html#priority-0xff
 type TransactionPriority<TPending extends boolean = boolean> = TransactionBase<
   bigint,
   number,
@@ -145,59 +175,56 @@ export type ZkSyncRpcTransaction<TPending extends boolean = boolean> =
   | RpcTransactionPriority<TPending>
   | RpcTransactionEIP712<TPending>
 
-//
 // Transaction Request
-//
+// https://era.zksync.io/docs/reference/concepts/transactions.html
 
-type TransactionRequest = TransactionRequest_ & {
-  gasPerPubdata?: string
-  customSignature?: Hex
-  paymaster?: Hex
-  paymasterInput?: Hex
-  factoryDeps?: Hex[]
-}
-
-type TransactionRequestEIP712 = TransactionRequestBase &
+export type TransactionRequestEIP712 = TransactionRequestBase &
   Partial<FeeValuesEIP1559> & {
     gasPerPubdata?: string
-    customSignature?: Hex
+    customSignature: Hex
     paymaster?: Address
     paymasterInput?: Hex
     factoryDeps?: Hex[]
     type?: 'eip712'
   }
 
+type TransactionRequest = TransactionRequest_ & {}
+
 export type ZkSyncTransactionRequest =
   | TransactionRequest
   | TransactionRequestEIP712
 
-// https://era.zksync.io/docs/reference/concepts/transactions.html#eip-712-0x71
 type RpcTransactionRequestEIP712 = TransactionRequestBase<Quantity, Index> &
   Partial<FeeValuesEIP1559<Quantity>> & {
     type?: '0x71'
   }
 
+type RpcTransactionRequest = RpcTransactionRequest_ & {
+  gasPerPubdata?: Hex
+  customSignature?: Hex
+  paymaster?: Address
+  paymasterInput?: Hex
+  factoryDeps?: Hex[]
+}
+
 export type ZkSyncRpcTransactionRequest =
-  | RpcTransactionRequest_
+  | RpcTransactionRequest
   | RpcTransactionRequestEIP712
 
 export type ZkSyncTransactionType = TransactionType | 'eip712' | 'priority'
 
-//
 // Transaction Receipt
-//
-
 // https://era.zksync.io/docs/api/js/types.html#transactionreceipt
+
 export type ZkSyncRpcTransactionReceiptOverrides = {
   l1BatchNumber: Hex | null
   l1BatchTxIndex: Hex | null
-  logs: Log[]
-  l2ToL1Logs: L2ToL1Log[]
+  logs: RpcLog[]
+  l2ToL1Logs: RpcL2ToL1Log[]
 }
 export type ZkSyncRpcTransactionReceipt = RpcTransactionReceipt &
   ZkSyncRpcTransactionReceiptOverrides
 
-// https://era.zksync.io/docs/api/js/types.html#transactionreceipt
 export type ZkSyncTransactionReceiptOverrides = {
   l1BatchNumber: bigint | null
   l1BatchTxIndex: bigint | null
@@ -231,11 +258,8 @@ export type TransactionSerializableEIP712<
     paymaster?: Address
     factoryDeps?: Hex[]
     paymasterInput?: Hex
-    customSignature?: Hex
+    customSignature: Hex
     chainId: number
-    // Should `gasLimit` be already be available? I can only see in block info
-    // but we need this for EIP712 serialization. Maybe it is gas?
-    // gasLimit: string
     type?: 'eip712'
   }
 

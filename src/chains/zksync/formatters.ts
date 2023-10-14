@@ -9,7 +9,11 @@ import {
 } from '../../utils/formatters/transaction.js'
 import { defineTransactionReceipt } from '../../utils/formatters/transactionReceipt.js'
 import { defineTransactionRequest } from '../../utils/formatters/transactionRequest.js'
+import { formatLog } from '../../utils/formatters/log.js'
+
 import type {
+  Log,
+  L2ToL1Log,
   ZkSyncBlockOverrides,
   ZkSyncRpcBlockOverrides,
   ZkSyncRpcTransaction,
@@ -59,7 +63,6 @@ export const formattersZkSync = {
       return transaction
     },
   }),
-  // https://era.zksync.io/docs/api/js/types.html#transactionreceipt
   transactionReceipt: /*#__PURE__*/ defineTransactionReceipt({
     format(
       args: ZkSyncRpcTransactionReceiptOverrides,
@@ -71,18 +74,30 @@ export const formattersZkSync = {
         l1BatchTxIndex: args.l1BatchTxIndex
           ? hexToBigInt(args.l1BatchTxIndex)
           : null,
-        // We should return logs, the the default TransactionReceipt should also have this,
-        // not sure it will give an error. https://era.zksync.io/docs/api/js/types.html#transactionreceipt
-        logs: args.logs,
-        l2ToL1Logs: args.l2ToL1Logs,
+        logs: args.logs.map((log) => {
+          return { ...formatLog(log) } //, l1BatchNumber: hexToBigInt(log.l1BatchNumber)}
+        }) as Log[],
+        l2ToL1Logs: args.l2ToL1Logs.map((l2ToL1Log) => {
+          return {
+            blockNumber: hexToBigInt(l2ToL1Log.blockHash),
+            blockHash: l2ToL1Log.blockHash,
+            l1BatchNumber: hexToBigInt(l2ToL1Log.l1BatchNumber),
+            transactionIndex: hexToBigInt(l2ToL1Log.transactionIndex),
+            shardId: hexToBigInt(l2ToL1Log.shardId),
+            isService: l2ToL1Log.isService,
+            sender: l2ToL1Log.sender,
+            key: l2ToL1Log.key,
+            value: l2ToL1Log.value,
+            transactionHash: l2ToL1Log.transactionHash,
+            logIndex: hexToBigInt(l2ToL1Log.logIndex),
+          }
+        }) as L2ToL1Log[],
       }
     },
   }),
   transactionRequest: /*#__PURE__*/ defineTransactionRequest({
     format(args: ZkSyncTransactionRequest): ZkSyncRpcTransactionRequest {
       const request = {} as ZkSyncRpcTransactionRequest
-      // TODO: Do we need to sign the request here?
-      console.log('TODO: Do we need to sign the request here?')
       if (args.type === 'eip712') request.type = '0x71'
       return request
     },

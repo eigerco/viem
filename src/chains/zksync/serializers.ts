@@ -1,9 +1,7 @@
-import { fromHex } from '~viem/index.js'
 import { InvalidAddressError } from '../../errors/address.js'
 import { BaseError } from '../../errors/base.js'
 import { InvalidChainIdError } from '../../errors/chain.js'
 import type { ChainSerializers } from '../../types/chain.js'
-import type { Signature } from '../../types/misc.js'
 import type { TransactionSerializable } from '../../types/transaction.js'
 import { isAddress } from '../../utils/address/isAddress.js'
 import { concatHex } from '../../utils/data/concat.js'
@@ -18,18 +16,13 @@ import type {
   TransactionSerializedEIP712,
   ZkSyncTransactionSerializable,
 } from './types.js'
-// TODO: Probably need to remove this dependency and extract the necessary code to here.
-//import { signTypedData } from '../../accounts/utils/signTypedData.js'
 
 export const serializeTransactionZkSync: SerializeTransactionFn<
   ZkSyncTransactionSerializable
 > = (tx, signature) => {
   // Handle EIP-712 transactions
   if (isEIP712(tx))
-    return serializeTransactionEIP712(
-      tx as TransactionSerializableEIP712,
-      signature,
-    )
+    return serializeTransactionEIP712(tx as TransactionSerializableEIP712)
 
   // Handle other transaction types
   return serializeTransaction(tx as TransactionSerializable, signature)
@@ -46,7 +39,6 @@ export type SerializeTransactionEIP712ReturnType = TransactionSerializedEIP712
 
 function serializeTransactionEIP712(
   transaction: TransactionSerializableEIP712,
-  signature?: Signature,
 ): SerializeTransactionEIP712ReturnType {
   assertTransactionEIP712(transaction)
   const {
@@ -66,13 +58,6 @@ function serializeTransactionEIP712(
     data,
   } = transaction
 
-  let signatureHex = toHex('')
-  if (signature !== undefined) {
-    const r = fromHex(signature.r, 'string')
-    const s = fromHex(signature.s, 'string')
-    signatureHex = toHex(r.concat(s))
-  }
-
   // https://github.com/foundry-rs/foundry/issues/4648
   const serializedTransaction = [
     nonce ? toHex(nonce) : '0x',
@@ -89,7 +74,6 @@ function serializeTransactionEIP712(
     from ?? '0x',
     gasPerPubdata ? toHex(gasPerPubdata) : '0x',
     factoryDeps ?? [],
-    signatureHex,
     customSignature ?? '0x', // EIP712 signature
     [paymaster ?? '0x', paymasterInput ?? '0x'],
   ]
@@ -108,6 +92,7 @@ function isEIP712(transaction: ZkSyncTransactionSerializable) {
   if (
     'maxFeePerGas' in transaction &&
     'maxPriorityFeePerGas' in transaction &&
+    'customSignature' in transaction &&
     (('paymaster' in transaction && 'paymasterInput' in transaction) ||
       'gasPerPubdata' in transaction ||
       'factoryDeps' in transaction)
