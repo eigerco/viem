@@ -253,7 +253,8 @@ export type ZkSyncRpcTransactionReceiptOverrides = {
   // Why root isn't added into RpcTransactionReceipt?
   root: Hex
 }
-export type ZkSyncRpcTransactionReceipt = Partial<RpcTransactionReceipt> &
+
+export type ZkSyncRpcTransactionReceipt = Omit<RpcTransactionReceipt, 'logs'> &
   ZkSyncRpcTransactionReceiptOverrides
 
 export type ZkSyncTransactionReceiptOverrides = {
@@ -262,7 +263,7 @@ export type ZkSyncTransactionReceiptOverrides = {
   logs: Log[]
   l2ToL1Logs: L2ToL1Log[]
 }
-export type ZkSyncTransactionReceipt = TransactionReceipt &
+export type ZkSyncTransactionReceipt = Omit<TransactionReceipt, 'logs'> &
   ZkSyncTransactionReceiptOverrides
 
 //

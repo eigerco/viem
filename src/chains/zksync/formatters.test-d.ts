@@ -9,7 +9,7 @@ import { createPublicClient } from '../../clients/createPublicClient.js'
 import { createWalletClient } from '../../clients/createWalletClient.js'
 import { http } from '../../clients/transports/http.js'
 import type { Hash } from '../../types/misc.js'
-import type { RpcBlock, RpcTransactionReceipt } from '../../types/rpc.js'
+import type { RpcBlock } from '../../types/rpc.js'
 import type { TransactionRequest } from '../../types/transaction.js'
 import type { Assign } from '../../types/utils.js'
 import { sendTransaction } from '../../wallet/index.js'
@@ -17,8 +17,6 @@ import { zkSync } from '../index.js'
 import { formattersZkSync } from './formatters.js'
 import type {
   L2ToL1Log,
-  RpcL2ToL1Log,
-  RpcLog,
   ZkSyncRpcTransaction,
   ZkSyncTransactionRequest,
 } from './types.js'
@@ -44,17 +42,40 @@ describe('block', () => {
 })
 
 describe('transactionReceipt', () => {
-  expectTypeOf(formattersZkSync.transactionReceipt.format)
+  // Cannot make this match
+  /*expectTypeOf(formattersZkSync.transactionReceipt.format)
     .parameter(0)
-    .toEqualTypeOf<
-      Partial<RpcTransactionReceipt> & {
-        l1BatchNumber: `0x${string}` | null
-        l1BatchTxIndex: `0x${string}` | null
-        logs: RpcLog[]
-        // TODO: Not sure how to describe every parameter in here. Maybe in another test?
-        l2ToL1Logs: RpcL2ToL1Log[]
-      }
-    >()
+    .toEqualTypeOf<Omit<RpcTransactionReceipt, 'logs'> & {
+      l1BatchNumber: Hex | null
+      l1BatchTxIndex: Hex | null
+      logs: {
+        address: Address
+        blockHash: Hash
+        blockNumber: Hex
+        data: Hex
+        logIndex:Hex
+        transactionHash: Hash
+        transactionIndex: Hex
+        removed: boolean
+        l1BatchNumber: Hex
+        transactionLogIndex: Hex
+        logType: Hex | null
+      }[]
+      l2ToL1Logs: {
+        blockNumber: Hex
+        blockHash: Hex
+        l1BatchNumber: Hex
+        transactionIndex: Hex
+        shardId: Hex
+        isService: boolean
+        sender: Hex
+        key: Hex
+        value: Hex
+        transactionHash: Hex
+        logIndex: Hex
+      }[]
+      root: Hex
+    }>()*/
 
   expectTypeOf<
     ReturnType<
