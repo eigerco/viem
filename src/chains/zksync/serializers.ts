@@ -78,7 +78,6 @@ function serializeTransactionEIP712(
     [paymaster ?? '0x', paymasterInput ?? '0x'],
   ]
 
-  // https://github.com/matter-labs/v2-testnet-contracts/blob/main/l2/system-contracts/libraries/TransactionHelper.sol#L117
   return concatHex([
     '0x71',
     toRlp(serializedTransaction),
@@ -104,9 +103,13 @@ function isEIP712(transaction: ZkSyncTransactionSerializable) {
 export function assertTransactionEIP712(
   transaction: TransactionSerializableEIP712,
 ) {
-  const { chainId, to, paymaster, paymasterInput } = transaction
+  const { chainId, to, from, paymaster, paymasterInput } = transaction
   if (chainId <= 0) throw new InvalidChainIdError({ chainId })
+
   if (to && !isAddress(to)) throw new InvalidAddressError({ address: to })
+  if (from && !isAddress(from)) throw new InvalidAddressError({ address: from })
+  if (paymaster && !isAddress(paymaster))
+    throw new InvalidAddressError({ address: paymaster })
 
   if (paymaster && !paymasterInput) {
     throw new BaseError(

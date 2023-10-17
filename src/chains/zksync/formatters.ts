@@ -1,26 +1,21 @@
 import { type ChainFormatters } from '../../types/chain.js'
 import type { Hash } from '../../types/misc.js'
-import type { RpcTransaction } from '../../types/rpc.js'
-import { hexToBigInt } from '../../utils/encoding/fromHex.js'
+import { hexToBigInt, hexToNumber } from '../../utils/encoding/fromHex.js'
 import { defineBlock } from '../../utils/formatters/block.js'
-import {
-  defineTransaction,
-  formatTransaction,
-} from '../../utils/formatters/transaction.js'
+import { formatLog } from '../../utils/formatters/log.js'
+import { defineTransaction } from '../../utils/formatters/transaction.js'
 import { defineTransactionReceipt } from '../../utils/formatters/transactionReceipt.js'
 import { defineTransactionRequest } from '../../utils/formatters/transactionRequest.js'
-import { formatLog } from '../../utils/formatters/log.js'
-
 import type {
-  Log,
   L2ToL1Log,
+  Log,
   ZkSyncBlockOverrides,
   ZkSyncRpcBlockOverrides,
   ZkSyncRpcTransaction,
-  ZkSyncRpcTransactionReceiptOverrides,
+  ZkSyncRpcTransactionReceipt,
   ZkSyncRpcTransactionRequest,
   ZkSyncTransaction,
-  ZkSyncTransactionReceiptOverrides,
+  ZkSyncTransactionReceipt,
   ZkSyncTransactionRequest,
 } from './types.js'
 
@@ -35,8 +30,8 @@ export const formattersZkSync = {
     } {
       const transactions = args.transactions?.map((transaction) => {
         if (typeof transaction === 'string') return transaction
-        const formatted = formatTransaction(
-          transaction as RpcTransaction,
+        const formatted = formattersZkSync.transaction.format(
+          transaction as ZkSyncRpcTransaction,
         ) as ZkSyncTransaction
         if (formatted.typeHex === '0x71') {
           formatted.type = 'eip712'
@@ -46,8 +41,10 @@ export const formattersZkSync = {
         return formatted
       }) as Hash[] | ZkSyncTransaction[]
       return {
-        l1BatchNumber: args.l1BatchNumber,
-        l1BatchTimestamp: args.l1BatchTimestamp,
+        l1BatchNumber: hexToBigInt(args.l1BatchNumber),
+        l1BatchTimestamp: args.l1BatchTimestamp
+          ? hexToBigInt(args.l1BatchTimestamp)
+          : null,
         transactions,
       }
     },
@@ -60,13 +57,19 @@ export const formattersZkSync = {
       } else if (args.type === '0xff') {
         transaction.type = 'priority'
       }
-      return transaction
+      return {
+        ...transaction,
+        l1BatchNumber: args.l1BatchNumber
+          ? hexToBigInt(args.l1BatchNumber)
+          : null,
+        l1BatchTxIndex: args.l1BatchTxIndex
+          ? hexToBigInt(args.l1BatchTxIndex)
+          : null,
+      } as ZkSyncTransaction
     },
   }),
   transactionReceipt: /*#__PURE__*/ defineTransactionReceipt({
-    format(
-      args: ZkSyncRpcTransactionReceiptOverrides,
-    ): ZkSyncTransactionReceiptOverrides {
+    format(args: ZkSyncRpcTransactionReceipt): ZkSyncTransactionReceipt {
       return {
         l1BatchNumber: args.l1BatchNumber
           ? hexToBigInt(args.l1BatchNumber)
@@ -75,7 +78,11 @@ export const formattersZkSync = {
           ? hexToBigInt(args.l1BatchTxIndex)
           : null,
         logs: args.logs.map((log) => {
-          return { ...formatLog(log) } //, l1BatchNumber: hexToBigInt(log.l1BatchNumber)}
+          return {
+            ...formatLog(log),
+            l1BatchNumber: hexToBigInt(log.l1BatchNumber),
+            transactionLogIndex: hexToNumber(log.transactionLogIndex),
+          }
         }) as Log[],
         l2ToL1Logs: args.l2ToL1Logs.map((l2ToL1Log) => {
           return {
@@ -92,7 +99,7 @@ export const formattersZkSync = {
             logIndex: hexToBigInt(l2ToL1Log.logIndex),
           }
         }) as L2ToL1Log[],
-      }
+      } as ZkSyncTransactionReceipt
     },
   }),
   transactionRequest: /*#__PURE__*/ defineTransactionRequest({

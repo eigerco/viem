@@ -16,19 +16,21 @@ import { sendTransaction } from '../../wallet/index.js'
 import { zkSync } from '../index.js'
 import { formattersZkSync } from './formatters.js'
 import type {
-  RpcLog,
+  L2ToL1Log,
   RpcL2ToL1Log,
-  ZkSyncBlockOverrides,
+  RpcLog,
   ZkSyncRpcTransaction,
   ZkSyncTransactionRequest,
-  L2ToL1Log,
 } from './types.js'
 
 describe('block', () => {
   expectTypeOf(formattersZkSync.block.format).parameter(0).toEqualTypeOf<
     Assign<
       Partial<RpcBlock>,
-      ZkSyncBlockOverrides & {
+      {
+        l1BatchNumber: `0x${string}`
+        l1BatchTimestamp: `0x${string}` | null
+      } & {
         transactions: `0x${string}`[] | ZkSyncRpcTransaction[]
       }
     >
@@ -85,23 +87,6 @@ describe('smoke', () => {
     })
 
     expectTypeOf(block.transactions).toEqualTypeOf<Hash[]>()
-
-    // Returns block not found.
-    /*const block_pending = await getBlock(client, {
-      blockTag: 'pending',
-      includeTransactions: true,
-    })
-
-    expectTypeOf(block_pending.hash).toEqualTypeOf<null>()
-    expectTypeOf(block_pending.logsBloom).toEqualTypeOf<null>()
-    expectTypeOf(block_pending.number).toEqualTypeOf<null>()
-    expectTypeOf(block_pending.transactions[0].blockHash).toEqualTypeOf<null>()
-    expectTypeOf(
-      block_pending.transactions[0].blockNumber,
-    ).toEqualTypeOf<null>()
-    expectTypeOf(
-      block_pending.transactions[0].transactionIndex,
-    ).toEqualTypeOf<null>()*/
   })
 
   test('transaction', async () => {
@@ -144,7 +129,7 @@ describe('smoke', () => {
     })
 
     prepareTransactionRequest(client, {
-      gasPerPubdata: '50000',
+      gasPerPubdata: 50000n,
       paymaster: '0x094499df5ee555ffc33af07862e43c90e6fee501',
       paymasterInput:
         '0x8c5a344500000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000',
@@ -168,7 +153,7 @@ describe('smoke', () => {
     })
 
     sendTransaction(client, {
-      gasPerPubdata: '50000',
+      gasPerPubdata: 50000n,
       paymaster: '0x094499df5ee555ffc33af07862e43c90e6fee501',
       paymasterInput:
         '0x8c5a344500000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000',
@@ -192,7 +177,7 @@ describe('smoke', () => {
     })
 
     signTransaction(client, {
-      gasPerPubdata: '50000',
+      gasPerPubdata: 50000n,
       paymaster: '0x094499df5ee555ffc33af07862e43c90e6fee501',
       paymasterInput:
         '0x8c5a344500000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000',
