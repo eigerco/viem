@@ -62,7 +62,7 @@ export type {
   ZkSyncTransactionRequest,
   ZkSyncTransactionSerializable,
   ZkSyncTransactionSerialized,
+  TransactionEIP712,
   TransactionSerializableEIP712,
   TransactionSerializedEIP712,
-  TransactionRequestEIP712,
 } from '../zksync/types.js'

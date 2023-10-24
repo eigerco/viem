@@ -161,6 +161,46 @@ export async function sendTransaction<
       })
     }
 
+    // TODO Make sure type is set
+    // TODO Check how zksync-web3 uses Eip712Meta outside EtherJS.
+
+    /*if (rest.type?.match('eip712') || rest.paymaster !== undefined) {
+      // Prepare the request for signing (assign appropriate fees, etc.)
+      console.log(
+        'Prepare the request for signing (assign appropriate fees, etc.)',
+      )
+      const request = await prepareTransactionRequest(client, {
+        account,
+        accessList,
+        chain,
+        data,
+        gas,
+        gasPrice,
+        maxFeePerGas,
+        maxPriorityFeePerGas,
+        nonce,
+        to,
+        value,
+        ...rest,
+      } as any)
+
+      if (!chainId) chainId = await getChainId(client)
+
+      const serializer = chain?.serializers?.transaction
+
+      if (serializer) {
+        const serializedTransaction = serializer({
+          ...request,
+          chainId,
+          type: 'eip712',
+        } as TransactionSerializable) as Hash
+
+        console.log(serializedTransaction)
+
+        return await sendRawTransaction(client, { serializedTransaction })
+      }
+    }*/
+
     if (account.type === 'local') {
       // Prepare the request for signing (assign appropriate fees, etc.)
       const request = await prepareTransactionRequest(client, {

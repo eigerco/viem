@@ -1,7 +1,10 @@
 {
+  "name": "viem_zksync",
+  "version": "0.0.1",
   "workspaces": ["examples/*", "playgrounds/*", "site", "src", "test"],
   "private": true,
   "type": "module",
+  "main": "src/index.ts",
   "scripts": {
     "bench": "vitest bench",
     "bench:ci": "CI=true vitest bench",

@@ -28,5 +28,9 @@ export const zkSyncLocalnet = /*#__PURE__*/ defineChain(
   {
     formatters: formattersZkSync,
     serializers: serializersZkSync,
+    fees: {
+      // method `eth_maxPriorityFeePerGas` not supported by ZkSync
+      defaultPriorityFee: 0n,
+    },
   },
 )

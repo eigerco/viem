@@ -250,3 +250,13 @@ export function hexToString(hex: Hex, opts: HexToStringOpts = {}): string {
   }
   return new TextDecoder().decode(bytes)
 }
+
+export function hexToList(hex: Hex): number[] {
+  const tokens = hex.replace('0x', '').match(/[0-9a-z]{2}/gi)
+
+  if (tokens == null) {
+    return []
+  } else {
+    return tokens.map((t) => parseInt(t, 16))
+  }
+}

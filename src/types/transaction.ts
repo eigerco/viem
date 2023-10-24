@@ -164,10 +164,21 @@ export type TransactionRequestEIP1559<
     accessList?: AccessList
     type?: TTransactionType
   }
+export type TransactionRequestEIP712<
+  TQuantity = bigint,
+  TIndex = number,
+  TTransactionType = 'eip712',
+> = TransactionRequestBase<TQuantity, TIndex> &
+  Partial<FeeValuesEIP1559<TQuantity>> & {
+    accessList?: AccessList
+    eip712Meta?: Record<string, unknown>
+    type?: TTransactionType
+  }
 export type TransactionRequest<TQuantity = bigint, TIndex = number> =
   | TransactionRequestLegacy<TQuantity, TIndex>
   | TransactionRequestEIP2930<TQuantity, TIndex>
   | TransactionRequestEIP1559<TQuantity, TIndex>
+  | TransactionRequestEIP712<TQuantity, TIndex>
 
 export type TransactionSerializedEIP1559 = `0x02${string}`
 export type TransactionSerializedEIP2930 = `0x01${string}`
@@ -191,6 +202,7 @@ export type TransactionSerializableLegacy<
   TIndex = number,
 > = TransactionSerializableBase<TQuantity, TIndex> &
   Partial<FeeValuesLegacy<TQuantity>> & {
+    eip712Meta?: never
     accessList?: never
     chainId?: number
     type?: 'legacy'
@@ -200,6 +212,7 @@ export type TransactionSerializableEIP2930<
   TIndex = number,
 > = TransactionSerializableBase<TQuantity, TIndex> &
   Partial<FeeValuesLegacy<TQuantity>> & {
+    eip712Meta?: never
     accessList?: AccessList
     chainId: number
     type?: 'eip2930'
@@ -210,15 +223,29 @@ export type TransactionSerializableEIP1559<
   TIndex = number,
 > = TransactionSerializableBase<TQuantity, TIndex> &
   Partial<FeeValuesEIP1559<TQuantity>> & {
+    eip712Meta?: never
     accessList?: AccessList
     chainId: number
     type?: 'eip1559'
     yParity?: number
   }
+// Is EIP712 a subset of EIP1559?
+export type TransactionSerializableEIP712<
+  TQuantity = bigint,
+  TIndex = number,
+> = TransactionSerializableBase<TQuantity, TIndex> &
+  Partial<FeeValuesEIP1559<TQuantity>> & {
+    accessList?: AccessList
+    chainId: number
+    type?: 'eip712'
+    yParity?: number
+    eip712Meta: Record<string, unknown>
+  }
 export type TransactionSerializableGeneric<
   TQuantity = bigint,
   TIndex = number,
 > = TransactionSerializableBase<TQuantity, TIndex> & {
+  eip712Meta?: Record<string, unknown>
   accessList?: AccessList
   chainId?: number
   gasPrice?: TQuantity
@@ -231,4 +258,5 @@ export type TransactionSerializable<TQuantity = bigint, TIndex = number> =
   | TransactionSerializableLegacy<TQuantity, TIndex>
   | TransactionSerializableEIP2930<TQuantity, TIndex>
   | TransactionSerializableEIP1559<TQuantity, TIndex>
+  | TransactionSerializableEIP712<TQuantity, TIndex>
   | TransactionSerializableGeneric<TQuantity, TIndex>

@@ -10,14 +10,13 @@ import type {
   RpcLog as RpcLog_,
   RpcTransaction as RpcTransaction_,
   RpcTransactionReceipt,
-  RpcTransactionRequest,
   TransactionType,
 } from '../../types/rpc.js'
 import type {
   Transaction as Transaction_,
   TransactionBase,
   TransactionReceipt,
-  TransactionRequest as TransactionRequest_,
+  TransactionRequest,
   TransactionRequestBase,
   TransactionSerializable,
   TransactionSerializableBase,
@@ -53,6 +52,19 @@ export type RpcLog = RpcLog_ & {
   // These are returned but doesn't apear in Log structure neither is mentioned in https://era.zksync.io/docs/api/js/types.html
   transactionLogIndex: Hex
   logType: Hex | null
+}
+
+// User to get gas estimate
+type PaymasterParams = {
+  paymaster: Address
+  paymasterInput: number[]
+}
+
+export type Eip712Meta = {
+  gasPerPubdata?: Hex
+  factoryDeps?: Hex[]
+  customSignature?: Hex
+  paymasterParams?: PaymasterParams
 }
 
 export type L2ToL1Log = {
@@ -93,12 +105,12 @@ export type ZkSyncFeeValues<TQuantity = bigint> = {
 // https://era.zksync.io/docs/api/js/types.html#block
 
 export type ZkSyncBlockOverrides = {
-  l1BatchNumber: bigint
+  l1BatchNumber: bigint | null
   l1BatchTimestamp: bigint | null
 }
 
 export type ZkSyncRpcBlockOverrides = {
-  l1BatchNumber: Hex
+  l1BatchNumber: Hex | null
   l1BatchTimestamp: Hex | null
 }
 export type ZkSyncRpcBlock<
@@ -122,9 +134,8 @@ export type ZkSyncBlock<
 > &
   ZkSyncBlockOverrides
 
-//
 // Transaction
-//
+
 type TransactionOverrides = {
   l1BatchNumber: bigint | null
   l1BatchTxIndex: bigint | null
@@ -140,15 +151,12 @@ type TransactionPriority<TPending extends boolean = boolean> = TransactionBase<
     type: 'priority'
   }
 
-type TransactionEIP712<TPending extends boolean = boolean> = TransactionBase<
-  bigint,
-  number,
-  TPending
-> &
-  TransactionOverrides &
-  FeeValuesEIP1559 & {
-    type: 'eip712'
-  }
+export type TransactionEIP712<TPending extends boolean = boolean> =
+  TransactionBase<bigint, number, TPending> &
+    TransactionOverrides &
+    FeeValuesEIP1559 & {
+      type: 'eip712'
+    }
 
 type Transaction<TPending extends boolean = boolean> = Transaction_<
   bigint,
@@ -215,30 +223,23 @@ export type ZkSyncRpcTransaction<TPending extends boolean = boolean> =
 // Transaction Request
 // https://era.zksync.io/docs/reference/concepts/transactions.html
 
-export type TransactionRequestEIP712 = TransactionRequestBase &
+export type ZkSyncTransactionRequest = TransactionRequest &
   Partial<FeeValuesEIP1559> & {
-    gasPerPubdata?: bigint
-    customSignature: Hex
+    gasPerPubdata: bigint
+    customSignature?: Hex
     paymaster?: Address
     paymasterInput?: Hex
     factoryDeps?: Hex[]
     type?: 'eip712'
   }
 
-type TransactionRequest = TransactionRequest_ & {}
-
-export type ZkSyncTransactionRequest =
-  | TransactionRequest
-  | TransactionRequestEIP712
-
 type RpcTransactionRequestEIP712 = TransactionRequestBase<Quantity, Index> &
   Partial<FeeValuesEIP1559<Quantity>> & {
+    eip712Meta: Eip712Meta
     type?: '0x71'
   }
 
-export type ZkSyncRpcTransactionRequest =
-  | RpcTransactionRequest
-  | RpcTransactionRequestEIP712
+export type ZkSyncRpcTransactionRequest = RpcTransactionRequestEIP712
 
 export type ZkSyncTransactionType = TransactionType | 'eip712' | 'priority'
 

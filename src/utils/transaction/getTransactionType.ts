@@ -5,6 +5,7 @@ import {
 import type { ErrorType } from '../../errors/utils.js'
 import type {
   TransactionSerializable,
+  TransactionSerializableEIP712,
   TransactionSerializableEIP1559,
   TransactionSerializableEIP2930,
   TransactionSerializableGeneric,
@@ -16,6 +17,9 @@ export type GetTransactionType<
 > =
   | (TTransactionSerializable extends TransactionSerializableLegacy
       ? 'legacy'
+      : never)
+  | (TTransactionSerializable extends TransactionSerializableEIP712
+      ? 'eip712'
       : never)
   | (TTransactionSerializable extends TransactionSerializableEIP1559
       ? 'eip1559'
@@ -38,6 +42,9 @@ export function getTransactionType<
 ): GetTransactionType<TTransactionSerializable> {
   if (transaction.type)
     return transaction.type as GetTransactionType<TTransactionSerializable>
+
+  if (typeof transaction.eip712Meta !== 'undefined')
+    return 'eip712' as GetTransactionType<TTransactionSerializable>
 
   if (
     typeof transaction.maxFeePerGas !== 'undefined' ||

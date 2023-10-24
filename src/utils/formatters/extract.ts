@@ -11,7 +11,8 @@ export function extract(
   { format }: { format?: ChainFormatter['format'] },
 ) {
   if (!format) return {}
-  const keys = Object.keys(format({}))
+  const keys = Object.keys(value)
+  //const keys = Object.keys(format({}))
   return keys.reduce((data: Record<string, unknown>, key) => {
     // biome-ignore lint/suspicious/noPrototypeBuiltins:
     if (value?.hasOwnProperty(key)) {

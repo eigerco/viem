@@ -37,6 +37,7 @@ export const serializersZkSync = {
 
 export type SerializeTransactionEIP712ReturnType = TransactionSerializedEIP712
 
+// TODO: This is ZkSync specific
 function serializeTransactionEIP712(
   transaction: TransactionSerializableEIP712,
 ): SerializeTransactionEIP712ReturnType {

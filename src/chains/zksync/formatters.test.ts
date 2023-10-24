@@ -1,5 +1,4 @@
 import { describe, expect, test } from 'vitest'
-
 import { getBlock } from '../../actions/public/getBlock.js'
 import { getTransaction } from '../../actions/public/getTransaction.js'
 import { getTransactionReceipt } from '../../actions/public/getTransactionReceipt.js'
@@ -1144,5 +1143,118 @@ describe('transaction receipt', () => {
         "type": "0xff",
       }
       `)
+  })
+})
+
+describe('transactionRequest', () => {
+  test('formatter', () => {
+    const { transactionRequest } = zkSync.formatters!
+
+    expect(
+      transactionRequest.format({
+        paymaster: '0x4B5DF730c2e6b28E17013A1485E5d9BC41Efe021',
+        paymasterInput:
+          '0x8c5a344500000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000',
+        gasPerPubdata: 50000n,
+        from: '0x0f16e9b0d03470827a95cdfd0cb8a8a3b46969b9',
+        gas: 13000n,
+        nonce: 4,
+        maxFeePerGas: 2n,
+        maxPriorityFeePerGas: 1n,
+        value: 0n,
+        factoryDeps: ['0x1234', '0xabcd'],
+      }),
+    ).toMatchInlineSnapshot(`
+      {
+        "eip712Meta": {
+          "factoryDeps": [
+            "0x1234",
+            "0xabcd",
+          ],
+          "gasPerPubdata": "0xc350",
+          "paymasterParams": {
+            "paymaster": "0x4B5DF730c2e6b28E17013A1485E5d9BC41Efe021",
+            "paymasterInput": [
+              140,
+              90,
+              52,
+              69,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              32,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+            ],
+          },
+        },
+        "from": "0x0f16e9b0d03470827a95cdfd0cb8a8a3b46969b9",
+        "gas": "0x32c8",
+        "gasPrice": undefined,
+        "maxFeePerGas": "0x2",
+        "maxPriorityFeePerGas": "0x1",
+        "nonce": "0x4",
+        "type": "0x71",
+        "value": "0x0",
+      }
+    `)
   })
 })

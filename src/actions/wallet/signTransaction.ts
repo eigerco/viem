@@ -68,7 +68,7 @@ export type SignTransactionErrorType =
  *   - Local Accounts: Signs locally. No JSON-RPC request.
  *
  * @param args - {@link SignTransactionParameters}
- * @returns The signed serialized tranasction. {@link SignTransactionReturnType}
+ * @returns The signed serialized transaction. {@link SignTransactionReturnType}
  *
  * @example
  * import { createWalletClient, custom } from 'viem'
@@ -137,6 +137,22 @@ export async function signTransaction<
   const formatters = chain?.formatters || client.chain?.formatters
   const format =
     formatters?.transactionRequest?.format || formatTransactionRequest
+
+  // --
+  // This is needed to be able to sign the transaction or else it will try to send
+  // the request for the server with `eth_signTransaction` because the private key
+  // isn't available.
+
+  if (
+    transaction.customSignature !== undefined &&
+    client.chain?.serializers?.transaction
+  ) {
+    return client.chain?.serializers?.transaction(
+      { chainId, ...transaction } as unknown as TransactionSerializable,
+      { r: '0x0', s: '0x0', v: 0n },
+    )
+  }
+  // --
 
   if (account.type === 'local')
     return account.signTransaction(

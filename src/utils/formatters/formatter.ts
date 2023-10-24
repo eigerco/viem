@@ -10,7 +10,7 @@ export function defineFormatter<TType extends string, TParameters, TReturnType>(
   return <
     TOverrideParameters,
     TOverrideReturnType,
-    TExclude extends (keyof TParameters)[] = [],
+    TExclude extends (keyof (TParameters & TOverrideParameters))[] = [],
   >({
     exclude,
     format: overrides,
@@ -22,11 +22,13 @@ export function defineFormatter<TType extends string, TParameters, TReturnType>(
       exclude,
       format: (args: Assign<TParameters, TOverrideParameters>) => {
         const formatted = format(args as any)
+
         if (exclude) {
           for (const key of exclude) {
             delete (formatted as any)[key]
           }
         }
+
         return {
           ...formatted,
           ...overrides(args),

@@ -26,6 +26,7 @@ export default async function () {
   // handled in `setup.ts` but may require additional resetting (e.g. via `afterAll`), in case of
   // any custom per-test adjustments that persist beyond `anvil_reset`.
   return await startProxy({
+    port: 8547,
     options: {
       forkUrl,
       forkBlockNumber,

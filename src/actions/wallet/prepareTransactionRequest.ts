@@ -151,7 +151,8 @@ export async function prepareTransactionRequest<
     }
   }
 
-  if (request.type === 'eip1559') {
+  // This should support 'eip712', it is the same as 'eip1559'
+  if (request.type === 'eip1559' || request.type === 'eip712') {
     // EIP-1559 fees
     const { maxFeePerGas, maxPriorityFeePerGas } =
       await internal_estimateFeesPerGas(client, {

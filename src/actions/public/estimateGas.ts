@@ -154,10 +154,15 @@ export async function estimateGas<
       value,
     } as TransactionRequest)
 
+    // ISSUE: When doing the writeContract, it gives the chain to the request, and cannot
+    // estimate gas because it cannot clone the request object. Need to know why this is
+    // happening and find a proper fix.
+
     const balance = await client.request({
       method: 'eth_estimateGas',
-      params: block ? [request, block] : [request],
+      params: block ? [request, block] : [{ ...request, chain: '0x0' }],
     })
+
     return BigInt(balance)
   } catch (err) {
     throw getEstimateGasError(err as BaseError, {
