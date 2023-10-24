@@ -32,6 +32,7 @@ import {
   type FormattedTransactionRequest,
   formatTransactionRequest,
 } from '../../utils/formatters/transactionRequest.js'
+import { getAction } from '../../utils/getAction.js'
 import {
   type AssertRequestErrorType,
   type AssertRequestParameters,
@@ -154,7 +155,7 @@ export async function sendTransaction<
 
     let chainId
     if (chain !== null) {
-      chainId = await getChainId(client)
+      chainId = await getAction(client, getChainId)({})
       assertCurrentChain({
         currentChainId: chainId,
         chain,
@@ -203,7 +204,10 @@ export async function sendTransaction<
 
     if (account.type === 'local') {
       // Prepare the request for signing (assign appropriate fees, etc.)
-      const request = await prepareTransactionRequest(client, {
+      const request = await getAction(
+        client,
+        prepareTransactionRequest,
+      )({
         account,
         accessList,
         chain,
@@ -218,7 +222,7 @@ export async function sendTransaction<
         ...rest,
       } as any)
 
-      if (!chainId) chainId = await getChainId(client)
+      if (!chainId) chainId = await getAction(client, getChainId)({})
 
       const serializer = chain?.serializers?.transaction
       const serializedTransaction = (await account.signTransaction(
@@ -228,7 +232,10 @@ export async function sendTransaction<
         } as TransactionSerializable,
         { serializer },
       )) as Hash
-      return await sendRawTransaction(client, {
+      return await getAction(
+        client,
+        sendRawTransaction,
+      )({
         serializedTransaction,
       })
     }
