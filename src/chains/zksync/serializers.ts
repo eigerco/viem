@@ -76,7 +76,7 @@ function serializeTransactionEIP712(
     gasPerPubdata ? toHex(gasPerPubdata) : '0x',
     factoryDeps ?? [],
     customSignature ?? '0x', // EIP712 signature
-    [paymaster ?? '0x', paymasterInput ?? '0x'],
+    paymaster && paymasterInput ? [paymaster, paymasterInput] : [],
   ]
 
   return concatHex([
@@ -90,12 +90,10 @@ function serializeTransactionEIP712(
 
 function isEIP712(transaction: ZkSyncTransactionSerializable) {
   if (
-    'maxFeePerGas' in transaction &&
-    'maxPriorityFeePerGas' in transaction &&
-    'customSignature' in transaction &&
-    (('paymaster' in transaction && 'paymasterInput' in transaction) ||
-      'gasPerPubdata' in transaction ||
-      'factoryDeps' in transaction)
+    'customSignature' in transaction ||
+    ('paymaster' in transaction && 'paymasterInput' in transaction) ||
+    'gasPerPubdata' in transaction ||
+    'factoryDeps' in transaction
   )
     return true
   return false

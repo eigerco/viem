@@ -91,7 +91,9 @@ export const formattersZkSync = {
         logs: args.logs.map((log) => {
           return {
             ...formatLog(log),
-            l1BatchNumber: hexToBigInt(log.l1BatchNumber),
+            l1BatchNumber: log.l1BatchNumber
+              ? hexToBigInt(log.l1BatchNumber)
+              : null,
             transactionLogIndex: hexToNumber(log.transactionLogIndex),
             logType: log.logType,
           }
