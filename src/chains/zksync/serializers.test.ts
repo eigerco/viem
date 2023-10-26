@@ -1,4 +1,4 @@
-import { expect, test } from 'vitest'
+import { test } from 'vitest'
 import { accounts } from '~test/src/constants.js'
 import { privateKeyToAccount } from '../../accounts/privateKeyToAccount.js'
 import { signTransaction } from '../../accounts/utils/signTransaction.js'
@@ -8,10 +8,10 @@ import { zkSyncTestnet } from '../index.js'
 import { serializeTransactionZkSync } from './serializers.js'
 import type { TransactionSerializableEIP712 } from './types.js'
 
-const greeterContractLocalnet = '0x111C3E89Ce80e62EE88318C2804920D4c96f92bb'
+const _greeterContractLocalnet = '0x111C3E89Ce80e62EE88318C2804920D4c96f92bb'
 const greeterContractTestnet = '0xbe9bcf56654fd81a921b6Bd07965Dd67Afbb0B69'
 
-const paymasterContractLocalnet = '0x4B5DF730c2e6b28E17013A1485E5d9BC41Efe021'
+const _paymasterContractLocalnet = '0x4B5DF730c2e6b28E17013A1485E5d9BC41Efe021'
 const paymasterContractTestnet = '0xFD9aE5ebB0F6656f4b77a0E99dCbc5138d54b0BA'
 
 const baseEip712: TransactionSerializableEIP712 = {
