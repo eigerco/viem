@@ -134,7 +134,8 @@ export async function prepareTransactionRequest<
 
   const request = { ...args, from: account.address }
 
-  if (typeof nonce === 'undefined')
+  if (typeof nonce === 'undefined') {
+    console.log('nonce')
     request.nonce = await getAction(
       client,
       getTransactionCount,
@@ -142,6 +143,8 @@ export async function prepareTransactionRequest<
       address: account.address,
       blockTag: 'pending',
     })
+    console.log(request.nonce)
+  }
 
   if (typeof type === 'undefined') {
     try {
