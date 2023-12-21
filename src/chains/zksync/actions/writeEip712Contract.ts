@@ -21,9 +21,9 @@ import type { FormattedTransactionRequest } from '../../../utils/formatters/tran
 import { getAction } from '../../../utils/getAction.js'
 import type { ChainEIP712 } from '../types/chain.js'
 import {
-  type SendEip712TransactionErrorType,
-  type SendEip712TransactionParameters,
-  type SendEip712TransactionReturnType,
+  type SendTransactionErrorType,
+  type SendTransactionParameters,
+  type SendTransactionReturnType,
   sendTransaction,
 } from './sendTransaction.js'
 
@@ -45,27 +45,23 @@ export type WriteEip712ContractParameters<
   GetValue<
     TAbi,
     TFunctionName,
-    SendEip712TransactionParameters<
+    SendTransactionParameters<
       TChain,
       TAccount,
       TChainOverride
-    > extends SendEip712TransactionParameters
-      ? SendEip712TransactionParameters<
-          TChain,
-          TAccount,
-          TChainOverride
-        >['value']
-      : SendEip712TransactionParameters['value']
+    > extends SendTransactionParameters
+      ? SendTransactionParameters<TChain, TAccount, TChainOverride>['value']
+      : SendTransactionParameters['value']
   > & {
     /** Data to append to the end of the calldata. Useful for adding a ["domain" tag](https://opensea.notion.site/opensea/Seaport-Order-Attributions-ec2d69bf455041a5baa490941aad307f). */
     dataSuffix?: Hex
   }
 
-export type WriteEip712ContractReturnType = SendEip712TransactionReturnType
+export type WriteEip712ContractReturnType = SendTransactionReturnType
 
 export type WriteEip712ContractErrorType =
   | EncodeFunctionDataErrorType
-  | SendEip712TransactionErrorType
+  | SendTransactionErrorType
   | ErrorType
 
 /**
@@ -158,10 +154,6 @@ export async function writeEip712Contract<
     data: `${data}${dataSuffix ? dataSuffix.replace('0x', '') : ''}`,
     to: address,
     ...request,
-  } as unknown as SendEip712TransactionParameters<
-    TChain,
-    TAccount,
-    TChainOverride
-  >)
+  } as unknown as SendTransactionParameters<TChain, TAccount, TChainOverride>)
   return hash
 }

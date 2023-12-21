@@ -3,13 +3,13 @@ import type { Client } from '../../../clients/createClient.js'
 import type { Transport } from '../../../clients/transports/createTransport.js'
 import type { Account } from '../../../types/account.js'
 import {
-  type PrepareEip712TransactionRequestParameters,
-  type PrepareEip712TransactionRequestReturnType,
-  prepareEip712TransactionRequest,
-} from '../actions/prepareEip712TransactionRequest.js'
+  type PrepareTransactionRequestParameters,
+  type PrepareTransactionRequestReturnType,
+  prepareTransactionRequest,
+} from '../actions/prepareTransactionRequest.js'
 import {
-  type SendEip712TransactionParameters,
-  type SendEip712TransactionReturnType,
+  type SendTransactionParameters,
+  type SendTransactionReturnType,
   sendTransaction,
 } from '../actions/sendTransaction.js'
 import {
@@ -33,8 +33,8 @@ export type Eip712Actions<
    *
    * - Docs: https://viem.sh/docs/zksync/actions/prepareEip712TransactionRequest.html
    *
-   * @param args - {@link PrepareEip712TransactionRequestParameters}
-   * @returns The transaction request. {@link PrepareEip712TransactionRequestReturnType}
+   * @param args - {@link PrepareTransactionRequestParameters}
+   * @returns The transaction request. {@link PrepareTransactionRequestReturnType}
    *
    * @example
    * import { createWalletClient, custom } from 'viem'
@@ -71,13 +71,9 @@ export type Eip712Actions<
   prepareEip712TransactionRequest: <
     TChainOverride extends ChainEIP712 | undefined = undefined,
   >(
-    args: PrepareEip712TransactionRequestParameters<
-      TChain,
-      TAccount,
-      TChainOverride
-    >,
+    args: PrepareTransactionRequestParameters<TChain, TAccount, TChainOverride>,
   ) => Promise<
-    PrepareEip712TransactionRequestReturnType<TChain, TAccount, TChainOverride>
+    PrepareTransactionRequestReturnType<TChain, TAccount, TChainOverride>
   >
 
   /**
@@ -89,8 +85,8 @@ export type Eip712Actions<
    *   - Local Accounts: [`eth_sendRawTransaction`](https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_sendrawtransaction)
    *
    * @param client - Client to use
-   * @param parameters - {@link SendEip712TransactionParameters}
-   * @returns The [Transaction](https://viem.sh/docs/glossary/terms.html#transaction) hash. {@link SendEip712TransactionReturnType}
+   * @param parameters - {@link SendTransactionParameters}
+   * @returns The [Transaction](https://viem.sh/docs/glossary/terms.html#transaction) hash. {@link SendTransactionReturnType}
    *
    * @example
    * import { createWalletClient, custom } from 'viem'
@@ -127,8 +123,8 @@ export type Eip712Actions<
   sendEip712Transaction: <
     TChainOverride extends ChainEIP712 | undefined = undefined,
   >(
-    args: SendEip712TransactionParameters<TChain, TAccount, TChainOverride>,
-  ) => Promise<SendEip712TransactionReturnType>
+    args: SendTransactionParameters<TChain, TAccount, TChainOverride>,
+  ) => Promise<SendTransactionReturnType>
 
   /**
    * Signs a transaction.
@@ -254,7 +250,7 @@ export function eip712Actions() {
   ): Eip712Actions<TChain, TAccount> => {
     return {
       prepareEip712TransactionRequest: (args) =>
-        prepareEip712TransactionRequest(client, args),
+        prepareTransactionRequest(client, args),
       sendEip712Transaction: (args) => sendTransaction(client, args),
       signEip712Transaction: (args) => signEip712Transaction(client, args),
       writeEip712Contract: (args) => writeEip712Contract(client, args),

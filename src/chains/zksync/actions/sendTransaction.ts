@@ -50,15 +50,15 @@ import {
 import { type TransactionRequestEIP712 } from '../types.js'
 import { type ChainEIP712, isEip712Transaction } from '../types/chain.js'
 import {
-  type PrepareEip712TransactionRequestErrorType,
-  prepareEip712TransactionRequest,
-} from './prepareEip712TransactionRequest.js'
+  type PrepareTransactionRequestErrorType,
+  prepareTransactionRequest,
+} from './prepareTransactionRequest.js'
 import {
   type SignEip712TransactionParameters,
   signEip712Transaction,
 } from './signEip712Transaction.js'
 
-export type FormattedTransactionEIP712Request<
+export type FormattedTransactionRequest<
   TChain extends Chain | undefined = Chain | undefined,
 > = ExtractChainFormatterParameters<
   TChain,
@@ -66,12 +66,12 @@ export type FormattedTransactionEIP712Request<
   TransactionRequestEIP712
 >
 
-export type SendEip712TransactionParameters<
+export type SendTransactionParameters<
   TChain extends ChainEIP712 | undefined = ChainEIP712 | undefined,
   TAccount extends Account | undefined = Account | undefined,
   TChainOverride extends ChainEIP712 | undefined = ChainEIP712 | undefined,
 > = UnionOmit<
-  FormattedTransactionEIP712Request<
+  FormattedTransactionRequest<
     TChainOverride extends ChainEIP712 ? TChainOverride : TChain
   >,
   'from'
@@ -79,15 +79,15 @@ export type SendEip712TransactionParameters<
   GetAccountParameter<TAccount> &
   GetChain<TChain, TChainOverride>
 
-export type SendEip712TransactionReturnType = Hash
+export type SendTransactionReturnType = Hash
 
-export type SendEip712TransactionErrorType =
+export type SendTransactionErrorType =
   | ParseAccountErrorType
   | GetTransactionErrorReturnType<
       | AssertCurrentChainErrorType
       | AssertRequestErrorType
       | GetChainIdErrorType
-      | PrepareEip712TransactionRequestErrorType
+      | PrepareTransactionRequestErrorType
       | SendRawTransactionReturnType
       | SignTransactionErrorType
       | RequestErrorType
@@ -103,8 +103,8 @@ export type SendEip712TransactionErrorType =
  *   - Local Accounts: [`eth_sendRawTransaction`](https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_sendrawtransaction)
  *
  * @param client - Client to use
- * @param parameters - {@link SendEip712TransactionParameters}
- * @returns The [Transaction](https://viem.sh/docs/glossary/terms.html#transaction) hash. {@link SendEip712TransactionReturnType}
+ * @param parameters - {@link SendTransactionParameters}
+ * @returns The [Transaction](https://viem.sh/docs/glossary/terms.html#transaction) hash. {@link SendTransactionReturnType}
  *
  * @example
  * import { createWalletClient, custom } from 'viem'
@@ -144,8 +144,8 @@ export async function sendTransaction<
   TChainOverride extends Chain | undefined = undefined,
 >(
   client: Client<Transport, TChain, TAccount>,
-  args: SendEip712TransactionParameters<TChain, TAccount, TChainOverride>,
-): Promise<SendEip712TransactionReturnType> {
+  args: SendTransactionParameters<TChain, TAccount, TChainOverride>,
+): Promise<SendTransactionReturnType> {
   const {
     account: account_ = client.account,
     chain = client.chain,
@@ -205,7 +205,7 @@ export async function sendTransaction<
       // Prepare the request for signing (assign appropriate fees, etc.)
       const request = await getAction(
         client,
-        prepareEip712TransactionRequest,
+        prepareTransactionRequest,
       )(transaction as any)
 
       if (!chainId) chainId = await getAction(client, getChainId)({})
@@ -228,7 +228,7 @@ export async function sendTransaction<
       // Prepare the request for signing (assign appropriate fees, etc.)
       const request = await getAction(
         client,
-        prepareEip712TransactionRequest,
+        prepareTransactionRequest,
       )({
         account,
         accessList,

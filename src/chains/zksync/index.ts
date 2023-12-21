@@ -1,8 +1,8 @@
 export {
   sendTransaction as sendEip712Transaction,
-  type SendEip712TransactionParameters,
-  type SendEip712TransactionErrorType,
-  type SendEip712TransactionReturnType,
+  type SendTransactionParameters as SendEip712TransactionParameters,
+  type SendTransactionErrorType as SendEip712TransactionErrorType,
+  type SendTransactionReturnType as SendEip712TransactionReturnType,
 } from './actions/sendTransaction.js'
 
 export {
@@ -20,11 +20,11 @@ export {
 } from './actions/writeEip712Contract.js'
 
 export {
-  prepareEip712TransactionRequest,
-  type PrepareEip712TransactionRequestParameters,
-  type PrepareEip712TransactionRequestErrorType,
-  type PrepareEip712TransactionRequestReturnType,
-} from './actions/prepareEip712TransactionRequest.js'
+  prepareTransactionRequest as prepareEip712TransactionRequest,
+  type PrepareTransactionRequestParameters as PrepareEip712TransactionRequestParameters,
+  type PrepareTransactionRequestErrorType as PrepareEip712TransactionRequestErrorType,
+  type PrepareTransactionRequestReturnType as PrepareEip712TransactionRequestReturnType,
+} from './actions/prepareTransactionRequest.js'
 
 export { defineChain } from './utils/defineChain.js'
 

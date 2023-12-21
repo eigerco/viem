@@ -14,7 +14,7 @@ import {
   type GetTransactionCountErrorType,
   getTransactionCount,
 } from '../../../actions/public/getTransactionCount.js'
-import { prepareTransactionRequest } from '../../../actions/wallet/prepareTransactionRequest.js'
+import { prepareTransactionRequest as originalPrepareTransactionRequest } from '../../../actions/wallet/prepareTransactionRequest.js'
 import type { Client } from '../../../clients/createClient.js'
 import type { Transport } from '../../../clients/transports/createTransport.js'
 import {
@@ -35,7 +35,7 @@ import { assertRequest } from '../../../utils/transaction/assertRequest.js'
 import { type GetTransactionType } from '../../../utils/transaction/getTransactionType.js'
 import { type ChainEIP712, isEip712Transaction } from '../types/chain.js'
 
-export type PrepareEip712TransactionRequestParameters<
+export type PrepareTransactionRequestParameters<
   TChain extends ChainEIP712 | undefined = ChainEIP712 | undefined,
   TAccount extends Account | undefined = Account | undefined,
   TChainOverride extends ChainEIP712 | undefined = ChainEIP712 | undefined,
@@ -48,7 +48,7 @@ export type PrepareEip712TransactionRequestParameters<
   GetAccountParameter<TAccount> &
   GetChain<TChain, TChainOverride>
 
-export type PrepareEip712TransactionRequestReturnType<
+export type PrepareTransactionRequestReturnType<
   TChain extends ChainEIP712 | undefined = ChainEIP712 | undefined,
   TAccount extends Account | undefined = Account | undefined,
   TChainOverride extends ChainEIP712 | undefined = ChainEIP712 | undefined,
@@ -58,7 +58,7 @@ export type PrepareEip712TransactionRequestReturnType<
   GetAccountParameter<TAccount> &
   GetChain<TChain, TChainOverride>
 
-export type PrepareEip712TransactionRequestErrorType =
+export type PrepareTransactionRequestErrorType =
   | AccountNotFoundErrorType
   | AssertRequestErrorType
   | ParseAccountErrorType
@@ -72,19 +72,19 @@ export type PrepareEip712TransactionRequestErrorType =
  *
  * - Docs: https://viem.sh/docs/zksync/actions/prepareEip712TransactionRequest.html
  *
- * @param args - {@link PrepareEip712TransactionRequestParameters}
- * @returns The transaction request. {@link PrepareEip712TransactionRequestReturnType}
+ * @param args - {@link PrepareTransactionRequestParameters}
+ * @returns The transaction request. {@link PrepareTransactionRequestReturnType}
  *
  * @example
  * import { createWalletClient, custom } from 'viem'
  * import { zkSync } from 'viem/chains'
- * import { prepareEip712TransactionRequest } from 'viem/chains/zksync'
+ * import { prepareTransactionRequest } from 'viem/chains/zksync'
  *
  * const client = createWalletClient({
  *   chain: zkSync,
  *   transport: custom(window.ethereum),
  * })
- * const request = await prepareEip712TransactionRequest(client, {
+ * const request = await prepareTransactionRequest(client, {
  *   account: '0xA0Cf798816D4b9b9866b5330EEa46a18382f251e',
  *   to: '0x0000000000000000000000000000000000000000',
  *   value: 1n,
@@ -107,19 +107,15 @@ export type PrepareEip712TransactionRequestErrorType =
  *   value: 1n,
  * })
  */
-export async function prepareEip712TransactionRequest<
+export async function prepareTransactionRequest<
   TChain extends ChainEIP712 | undefined,
   TAccount extends Account | undefined,
   TChainOverride extends ChainEIP712 | undefined = undefined,
 >(
   client: Client<Transport, TChain, TAccount>,
-  args: PrepareEip712TransactionRequestParameters<
-    TChain,
-    TAccount,
-    TChainOverride
-  >,
+  args: PrepareTransactionRequestParameters<TChain, TAccount, TChainOverride>,
 ): Promise<
-  PrepareEip712TransactionRequestReturnType<TChain, TAccount, TChainOverride>
+  PrepareTransactionRequestReturnType<TChain, TAccount, TChainOverride>
 > {
   const { account: account_ = client.account, nonce, gas } = args
   if (!account_) throw new AccountNotFoundError()
@@ -154,17 +150,17 @@ export async function prepareEip712TransactionRequest<
       } as EstimateGasParameters)
     }
 
-    return request as unknown as PrepareEip712TransactionRequestReturnType<
+    return request as unknown as PrepareTransactionRequestReturnType<
       TChain,
       TAccount,
       TChainOverride
     >
   }
 
-  return prepareTransactionRequest(
+  return originalPrepareTransactionRequest(
     client,
-    args as unknown as PrepareEip712TransactionRequestParameters,
-  ) as unknown as PrepareEip712TransactionRequestReturnType<
+    args as unknown as PrepareTransactionRequestParameters,
+  ) as unknown as PrepareTransactionRequestReturnType<
     TChain,
     TAccount,
     TChainOverride
