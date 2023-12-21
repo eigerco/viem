@@ -1,14 +1,14 @@
 import { describe, expect, test } from 'vitest'
 import { accounts } from '~test/src/constants.js'
 
-import { http } from '../../../clients/transports/http.js'
+import { greeterContract } from '~test/src/abis.js'
+import { publicClient } from '~test/src/utils.js'
 import { privateKeyToAccount } from '~viem/accounts/privateKeyToAccount.js'
+import { simulateContract } from '~viem/actions/index.js'
 import { createWalletClient } from '~viem/index.js'
+import { http } from '../../../clients/transports/http.js'
 import { zkSyncTestnet } from '../chains.js'
 import { eip712Actions } from './eip712.js'
-import { greeterContract } from '~test/src/abis.js'
-import { simulateContract } from '~viem/actions/index.js'
-import { publicClient } from '~test/src/utils.js'
 
 const zkSyncClient = createWalletClient({
   chain: zkSyncTestnet,
@@ -46,18 +46,21 @@ describe('smoke test', () => {
   test('prepareEip712TransactionRequest', async () => {
     const request = await zkSyncClient.prepareEip712TransactionRequest(base)
     expect(request).toBeDefined()
-  }),
+  })
+
   test('sendEip712Transaction', async () => {
     const request = await zkSyncClient.sendEip712Transaction(base)
     expect(request).toBeDefined()
-  }),
+  })
+
   test('signEip712Transaction', async () => {
     const signature = await zkSyncClient.signEip712Transaction({
-        from: accounts[0].address,
-        ...base
+      from: accounts[0].address,
+      ...base,
     })
     expect(signature).toBeDefined()
-  }),
+  })
+
   test('writeEip712Contract', async () => {
     const { request } = await simulateContract(publicClient, {
       ...greeterContract,
