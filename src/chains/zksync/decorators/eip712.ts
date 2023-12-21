@@ -16,12 +16,12 @@ import {
   type SignEip712TransactionParameters,
   type SignEip712TransactionReturnType,
   signEip712Transaction,
-} from '../actions/signEip712Transaction.js'
+} from '../actions/signTransaction.js'
 import {
-  type WriteEip712ContractParameters,
-  type WriteEip712ContractReturnType,
-  writeEip712Contract,
-} from '../actions/writeEip712Contract.js'
+  type WriteContractParameters,
+  type WriteContractReturnType,
+  writeContract,
+} from '../actions/writeContract.js'
 import type { ChainEIP712 } from '../types/chain.js'
 
 export type Eip712Actions<
@@ -187,8 +187,8 @@ export type Eip712Actions<
    * __Warning: The `write` internally sends a transaction – it does not validate if the contract write will succeed (the contract may throw an error). It is highly recommended to [simulate the contract write with `contract.simulate`](https://viem.sh/docs/contract/writeContract.html#usage) before you execute it.__
    *
    * @param client - Client to use
-   * @param parameters - {@link WriteEip712ContractParameters}
-   * @returns A [Transaction Hash](https://viem.sh/docs/glossary/terms.html#hash). {@link WriteEip712ContractReturnType}
+   * @param parameters - {@link WriteContractParameters}
+   * @returns A [Transaction Hash](https://viem.sh/docs/glossary/terms.html#hash). {@link WriteContractReturnType}
    *
    * @example
    * import { createWalletClient, custom, parseAbi } from 'viem'
@@ -230,14 +230,14 @@ export type Eip712Actions<
     TFunctionName extends string,
     TChainOverride extends ChainEIP712 | undefined = undefined,
   >(
-    args: WriteEip712ContractParameters<
+    args: WriteContractParameters<
       TAbi,
       TFunctionName,
       TChain,
       TAccount,
       TChainOverride
     >,
-  ) => Promise<WriteEip712ContractReturnType>
+  ) => Promise<WriteContractReturnType>
 }
 
 export function eip712Actions() {
@@ -253,7 +253,7 @@ export function eip712Actions() {
         prepareTransactionRequest(client, args),
       sendEip712Transaction: (args) => sendTransaction(client, args),
       signEip712Transaction: (args) => signEip712Transaction(client, args),
-      writeEip712Contract: (args) => writeEip712Contract(client, args),
+      writeEip712Contract: (args) => writeContract(client, args),
     }
   }
 }

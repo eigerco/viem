@@ -9,7 +9,7 @@ import { createWalletClient } from '../../../clients/createWalletClient.js'
 import { http } from '../../../clients/transports/http.js'
 import { zkSyncTestnet } from '../index.js'
 
-import { writeEip712Contract } from './writeEip712Contract.js'
+import { writeContract } from './writeContract.js'
 
 test('writeContract on ZkSync with EIP712', async () => {
   const walletClient = createWalletClient({
@@ -29,5 +29,5 @@ test('writeContract on ZkSync with EIP712', async () => {
     type: 'eip712',
     gasPerPubdata: 50000,
   })
-  expect(await writeEip712Contract(walletClient, request)).toBeDefined()
+  expect(await writeContract(walletClient, request)).toBeDefined()
 })

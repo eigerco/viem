@@ -1,20 +1,21 @@
 import { describe, expect, test } from 'vitest'
 
 import { accounts, localHttpUrl } from '~test/src/constants.js'
+import type { TransactionRequestBase } from '~viem/index.js'
 import { privateKeyToAccount } from '../../../accounts/privateKeyToAccount.js'
-import { zkSyncTestnet } from '../../../chains/index.js'
 import { createWalletClient } from '../../../clients/createWalletClient.js'
 import { http } from '../../../clients/transports/http.js'
 import { parseGwei } from '../../../utils/unit/parseGwei.js'
-import { signEip712Transaction } from './signEip712Transaction.js'
+import { zkSyncTestnet } from '../../index.js'
+import { signEip712Transaction as signTransaction } from './signTransaction.js'
 
 const sourceAccount = accounts[0]
 
-const base = {
+const base: TransactionRequestBase = {
   from: '0x0000000000000000000000000000000000000000',
   gas: 21000n,
   nonce: 785,
-} satisfies TransactionRequestBase
+}
 
 describe('custom (eip712)', () => {
   const walletClient = createWalletClient({
@@ -24,7 +25,7 @@ describe('custom (eip712)', () => {
 
   test('default', async () => {
     expect(
-      await signEip712Transaction(walletClient, {
+      await signTransaction(walletClient, {
         account: privateKeyToAccount(sourceAccount.privateKey),
         chain: zkSyncTestnet,
         ...base,

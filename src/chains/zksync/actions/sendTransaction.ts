@@ -56,7 +56,7 @@ import {
 import {
   type SignEip712TransactionParameters,
   signEip712Transaction,
-} from './signEip712Transaction.js'
+} from './signTransaction.js'
 
 export type FormattedTransactionRequest<
   TChain extends Chain | undefined = Chain | undefined,

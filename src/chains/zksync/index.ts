@@ -10,14 +10,14 @@ export {
   type SignEip712TransactionParameters,
   type SignEip712TransactionReturnType,
   type SignEip712TransactionErrorType,
-} from './actions/signEip712Transaction.js'
+} from './actions/signTransaction.js'
 
 export {
-  writeEip712Contract,
-  type WriteEip712ContractParameters,
-  type WriteEip712ContractErrorType,
-  type WriteEip712ContractReturnType,
-} from './actions/writeEip712Contract.js'
+  writeContract as writeEip712Contract,
+  type WriteContractParameters as WriteEip712ContractParameters,
+  type WriteContractErrorType as WriteEip712ContractErrorType,
+  type WriteContractReturnType as WriteEip712ContractReturnType,
+} from './actions/writeContract.js'
 
 export {
   prepareTransactionRequest as prepareEip712TransactionRequest,
