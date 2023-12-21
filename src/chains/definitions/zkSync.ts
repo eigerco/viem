@@ -1,7 +1,7 @@
+import { defineChain } from '~viem/index.js'
 import { eip712domainZkSync } from '../zksync/eip712signers.js'
 import { formattersZkSync } from '../zksync/formatters.js'
 import { serializersZkSync } from '../zksync/serializers.js'
-import { defineChain } from '../zksync/utils/defineChain.js'
 
 export const zkSync = /*#__PURE__*/ defineChain(
   {
@@ -34,10 +34,11 @@ export const zkSync = /*#__PURE__*/ defineChain(
         address: '0xF9cda624FBC7e059355ce98a31693d299FACd963',
       },
     },
-  },
-  {
-    serializers: serializersZkSync,
+    custom: {
+      eip712domain: eip712domainZkSync,
+    },
     formatters: formattersZkSync,
-    eip712domain: eip712domainZkSync,
+    serializers: serializersZkSync,
   },
+  {},
 )
