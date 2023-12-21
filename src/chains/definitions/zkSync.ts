@@ -40,5 +40,8 @@ export const zkSync = /*#__PURE__*/ defineChain(
     formatters: formattersZkSync,
     serializers: serializersZkSync,
   },
-  {},
+  {
+    formatters: formattersZkSync,
+    serializers: serializersZkSync,
+  },
 )

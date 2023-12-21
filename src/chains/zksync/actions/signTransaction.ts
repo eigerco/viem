@@ -38,7 +38,7 @@ import {
   type AssertRequestErrorType,
   assertRequest,
 } from '../../../utils/transaction/assertRequest.js'
-import { type ChainEIP712, isEip712Transaction } from '../types/chain.js'
+import { type ChainEIP712, isEip712Transaction } from '../types.js'
 
 export type SignEip712TransactionParameters<
   TChain extends ChainEIP712 | undefined = ChainEIP712 | undefined,
