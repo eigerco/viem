@@ -25,8 +25,8 @@ test('default', async () => {
   `)
 })
 
-const base = {
-  chain: zkSyncTestnet,
+type Args = Parameters<typeof zkSyncClient['prepareEip712TransactionRequest']>
+const root: Args[0] = {
   account: privateKeyToAccount(accounts[0].privateKey),
   to: '0x70997970c51812dc3a010c7d01b50e0d17dc79c8',
   maxFeePerGas: 10000000000n,
@@ -40,23 +40,26 @@ const base = {
   type: 'eip712',
   gasPerPubdata: 50000n,
 }
-
 describe('smoke test', () => {
   test('prepareEip712TransactionRequest', async () => {
-    const request = await zkSyncClient.prepareEip712TransactionRequest(base)
+    const base: Args = [root]
+    const request = await zkSyncClient.prepareEip712TransactionRequest(base[0])
     expect(request).toBeDefined()
   })
 
   test('sendEip712Transaction', async () => {
-    const request = await zkSyncClient.sendEip712Transaction(base)
+    const base: Parameters<typeof zkSyncClient['sendEip712Transaction']> = [
+      root,
+    ]
+    const request = await zkSyncClient.sendEip712Transaction(base[0])
     expect(request).toBeDefined()
   })
 
   test('signEip712Transaction', async () => {
-    const signature = await zkSyncClient.signEip712Transaction({
-      from: accounts[0].address,
-      ...base,
-    })
+    const base: Parameters<typeof zkSyncClient['signEip712Transaction']> = [
+      root,
+    ]
+    const signature = await zkSyncClient.signEip712Transaction(base[0])
     expect(signature).toBeDefined()
   })
 
