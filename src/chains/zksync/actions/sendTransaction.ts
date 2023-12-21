@@ -47,8 +47,8 @@ import {
   type AssertRequestParameters,
   assertRequest,
 } from '../../../utils/transaction/assertRequest.js'
+import { type TransactionRequestEIP712 } from '../types.js'
 import { type ChainEIP712, isEip712Transaction } from '../types/chain.js'
-import { type TransactionRequestEIP712 } from '../types/transaction.js'
 import {
   type PrepareEip712TransactionRequestErrorType,
   prepareEip712TransactionRequest,
@@ -138,7 +138,7 @@ export type SendEip712TransactionErrorType =
  *   value: 1000000000000000000n,
  * })
  */
-export async function sendEip712Transaction<
+export async function sendTransaction<
   TChain extends ChainEIP712 | undefined,
   TAccount extends Account | undefined,
   TChainOverride extends Chain | undefined = undefined,

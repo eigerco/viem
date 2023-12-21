@@ -10,8 +10,8 @@ import {
 import {
   type SendEip712TransactionParameters,
   type SendEip712TransactionReturnType,
-  sendEip712Transaction,
-} from '../actions/sendEip712Transaction.js'
+  sendTransaction,
+} from '../actions/sendTransaction.js'
 import {
   type SignEip712TransactionParameters,
   type SignEip712TransactionReturnType,
@@ -255,7 +255,7 @@ export function eip712Actions() {
     return {
       prepareEip712TransactionRequest: (args) =>
         prepareEip712TransactionRequest(client, args),
-      sendEip712Transaction: (args) => sendEip712Transaction(client, args),
+      sendEip712Transaction: (args) => sendTransaction(client, args),
       signEip712Transaction: (args) => signEip712Transaction(client, args),
       writeEip712Contract: (args) => writeEip712Contract(client, args),
     }

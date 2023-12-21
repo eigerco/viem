@@ -1,9 +1,9 @@
 export {
-  sendEip712Transaction,
+  sendTransaction as sendEip712Transaction,
   type SendEip712TransactionParameters,
   type SendEip712TransactionErrorType,
   type SendEip712TransactionReturnType,
-} from './actions/sendEip712Transaction.js'
+} from './actions/sendTransaction.js'
 
 export {
   signEip712Transaction,

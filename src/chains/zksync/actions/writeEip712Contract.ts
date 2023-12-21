@@ -24,8 +24,8 @@ import {
   type SendEip712TransactionErrorType,
   type SendEip712TransactionParameters,
   type SendEip712TransactionReturnType,
-  sendEip712Transaction,
-} from './sendEip712Transaction.js'
+  sendTransaction,
+} from './sendTransaction.js'
 
 export type WriteEip712ContractParameters<
   TAbi extends Abi | readonly unknown[] = Abi,
@@ -153,7 +153,7 @@ export async function writeEip712Contract<
 
   const hash = await getAction(
     client,
-    sendEip712Transaction,
+    sendTransaction,
   )({
     data: `${data}${dataSuffix ? dataSuffix.replace('0x', '') : ''}`,
     to: address,
