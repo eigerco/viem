@@ -134,7 +134,7 @@ export async function prepareTransactionRequest<
 
   const request = { ...args, from: account.address }
 
-  if (typeof nonce === 'undefined') {
+  if (typeof nonce === 'undefined')
     request.nonce = await getAction(
       client,
       getTransactionCount,
@@ -142,7 +142,6 @@ export async function prepareTransactionRequest<
       address: account.address,
       blockTag: 'pending',
     })
-  }
 
   if (typeof type === 'undefined') {
     try {
@@ -193,7 +192,7 @@ export async function prepareTransactionRequest<
     request.gasPrice = gasPrice_
   }
 
-  if (typeof gas === 'undefined') {
+  if (typeof gas === 'undefined')
     request.gas = await getAction(
       client,
       estimateGas,
@@ -201,7 +200,6 @@ export async function prepareTransactionRequest<
       ...request,
       account: { address: account.address, type: 'json-rpc' },
     } as EstimateGasParameters)
-  }
 
   assertRequest(request as AssertRequestParameters)
 
