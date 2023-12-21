@@ -2,7 +2,6 @@ import { expect, test } from 'vitest'
 
 import { greeterContract } from '~test/src/abis.js'
 import { accounts } from '~test/src/constants.js'
-import { publicClient } from '~test/src/utils.js'
 import { privateKeyToAccount } from '~viem/accounts/privateKeyToAccount.js'
 import { simulateContract } from '../../../actions/public/simulateContract.js'
 import { createWalletClient } from '../../../clients/createWalletClient.js'
@@ -14,9 +13,9 @@ import { writeContract } from './writeContract.js'
 test('writeContract on ZkSync with EIP712', async () => {
   const walletClient = createWalletClient({
     chain: zkSyncTestnet,
-    transport: http(zkSyncTestnet.rpcUrls.default.http),
+    transport: http(zkSyncTestnet.rpcUrls.default.http[0]),
   })
-  const { request } = await simulateContract(publicClient, {
+  const { request } = await simulateContract(walletClient, {
     ...greeterContract,
     account: privateKeyToAccount(accounts[0].privateKey),
     functionName: 'setGreeting',
@@ -27,7 +26,7 @@ test('writeContract on ZkSync with EIP712', async () => {
     paymasterInput:
       '0x8c5a344500000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000',
     type: 'eip712',
-    gasPerPubdata: 50000,
+    gasPerPubdata: 50000n,
   })
   expect(await writeContract(walletClient, request)).toBeDefined()
 })

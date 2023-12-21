@@ -29,7 +29,6 @@ describe('custom (eip712)', () => {
         account: privateKeyToAccount(sourceAccount.privateKey),
         chain: zkSyncTestnet,
         ...base,
-        feeCurrency: '0x765de816845861e75a25fca122bb6898b8b1282a',
         maxFeePerGas: parseGwei('20'),
         maxPriorityFeePerGas: parseGwei('2'),
         paymaster: '0xFD9aE5ebB0F6656f4b77a0E99dCbc5138d54b0BA',

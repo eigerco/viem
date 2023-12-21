@@ -2,7 +2,6 @@ import { describe, expect, test } from 'vitest'
 import { accounts } from '~test/src/constants.js'
 
 import { greeterContract } from '~test/src/abis.js'
-import { publicClient } from '~test/src/utils.js'
 import { privateKeyToAccount } from '~viem/accounts/privateKeyToAccount.js'
 import { simulateContract } from '~viem/actions/index.js'
 import { createWalletClient } from '~viem/index.js'
@@ -12,7 +11,7 @@ import { eip712Actions } from './eip712.js'
 
 const zkSyncClient = createWalletClient({
   chain: zkSyncTestnet,
-  transport: http(zkSyncTestnet.rpcUrls.default.http), //does not work on anvil
+  transport: http(zkSyncTestnet.rpcUrls.default.http[0]),
 }).extend(eip712Actions())
 
 test('default', async () => {
@@ -62,7 +61,7 @@ describe('smoke test', () => {
   })
 
   test('writeEip712Contract', async () => {
-    const { request } = await simulateContract(publicClient, {
+    const { request } = await simulateContract(zkSyncClient, {
       ...greeterContract,
       account: privateKeyToAccount(accounts[0].privateKey),
       functionName: 'setGreeting',
@@ -73,7 +72,7 @@ describe('smoke test', () => {
       paymasterInput:
         '0x8c5a344500000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000',
       type: 'eip712',
-      gasPerPubdata: 50000,
+      gasPerPubdata: 50000n,
     })
     expect(await zkSyncClient.writeEip712Contract(request)).toBeDefined()
   })

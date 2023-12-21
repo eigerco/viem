@@ -37,7 +37,7 @@ describe('zksync on anvil', () => {
 describe('zksync on zkSyncTestnet', () => {
   const walletClient = createWalletClient({
     chain: zkSyncTestnet,
-    transport: http(zkSyncTestnet.rpcUrls.default.http), //does not work on anvil
+    transport: http(zkSyncTestnet.rpcUrls.default.http[0]),
   })
   test('eip712', async () => {
     expect(

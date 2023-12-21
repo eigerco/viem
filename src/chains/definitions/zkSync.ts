@@ -37,8 +37,6 @@ export const zkSync = /*#__PURE__*/ defineChain(
     custom: {
       eip712domain: eip712domainZkSync,
     },
-    formatters: formattersZkSync,
-    serializers: serializersZkSync,
   },
   {
     formatters: formattersZkSync,
