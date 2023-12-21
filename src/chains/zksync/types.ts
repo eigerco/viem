@@ -1,4 +1,4 @@
-import type { Abi, AbiEvent, Address } from 'abitype'
+import type { Abi, AbiEvent, Address, TypedDataDomain } from 'abitype'
 import type { Block, BlockTag } from '../../types/block.js'
 import type { FeeValuesEIP1559 } from '../../types/fee.js'
 import type { Log as Log_ } from '../../types/log.js'
@@ -333,3 +333,36 @@ export type ZkSyncEIP712TransactionToSign = {
   factoryDeps: Hex[]
   paymasterInput: Hex
 }
+
+// There is already a function getTypesForEIP712Domain, but not sure how to set up in here.
+type EIP712FieldType = 'uint256' | 'bytes' | 'bytes32[]'
+type EIP712Field = { name: string; type: EIP712FieldType }
+
+// Maybe it is the same as SignTypedDataParameters?
+export type EIP712Domain<TransactionToSign> = {
+  domain: TypedDataDomain
+  types: Record<string, EIP712Field[]>
+  primaryType: string
+  message: TransactionToSign
+}
+
+// Used to define the EIP712signer field in the chain.
+export type EIP712DomainFn<
+  TTransactionSerializable extends TransactionSerializable = TransactionSerializable,
+  TransactionToSign = {},
+> = (transaction: TTransactionSerializable) => EIP712Domain<TransactionToSign>
+
+export type TransactionRequestEIP712<
+  TQuantity = bigint,
+  TIndex = number,
+  TTransactionType = 'eip712',
+> = TransactionRequestBase<TQuantity, TIndex> &
+  Partial<FeeValuesEIP1559<TQuantity>> & {
+    accessList?: never
+    gasPerPubdata?: bigint
+    factoryDeps?: Hex[]
+    paymaster?: Address
+    paymasterInput?: Hex
+    customSignature?: Hex
+    type?: TTransactionType
+  }
