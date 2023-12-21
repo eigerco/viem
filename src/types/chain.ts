@@ -86,9 +86,14 @@ export type ChainRpcUrls = {
 /////////////////////////////////////////////////////////////////////
 // Config
 
+export type Custom = { [key: string]: unknown }
+
 export type ChainConfig<
   formatters extends ChainFormatters | undefined = ChainFormatters | undefined,
+  custom extends Custom | undefined = Custom | undefined,
 > = {
+  /** Custom data */
+  custom?: custom | undefined
   /**
    * Modifies how chain data structures (ie. Blocks, Transactions, etc)
    * are formatted & typed.

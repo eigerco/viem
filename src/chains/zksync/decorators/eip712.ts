@@ -22,7 +22,7 @@ import {
   type WriteContractReturnType,
   writeContract,
 } from '../actions/writeContract.js'
-import type { ChainEIP712 } from '../types/chain.js'
+import type { ChainEIP712 } from '../types.js'
 
 export type Eip712Actions<
   TChain extends ChainEIP712 | undefined = ChainEIP712 | undefined,

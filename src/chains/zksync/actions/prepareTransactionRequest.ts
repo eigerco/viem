@@ -33,7 +33,7 @@ import type {
 } from '../../../utils/transaction/assertRequest.js'
 import { assertRequest } from '../../../utils/transaction/assertRequest.js'
 import { type GetTransactionType } from '../../../utils/transaction/getTransactionType.js'
-import { type ChainEIP712, isEip712Transaction } from '../types/chain.js'
+import { type ChainEIP712, isEip712Transaction } from '../types.js'
 
 export type PrepareTransactionRequestParameters<
   TChain extends ChainEIP712 | undefined = ChainEIP712 | undefined,

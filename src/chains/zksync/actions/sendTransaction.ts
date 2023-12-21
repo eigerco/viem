@@ -47,8 +47,7 @@ import {
   type AssertRequestParameters,
   assertRequest,
 } from '../../../utils/transaction/assertRequest.js'
-import { type TransactionRequestEIP712 } from '../types.js'
-import { type ChainEIP712, isEip712Transaction } from '../types/chain.js'
+import { type ChainEIP712, type TransactionRequestEIP712 } from '../types.js'
 import {
   type PrepareTransactionRequestErrorType,
   prepareTransactionRequest,

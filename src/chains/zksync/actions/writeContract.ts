@@ -19,7 +19,7 @@ import {
 } from '../../../utils/abi/encodeFunctionData.js'
 import type { FormattedTransactionRequest } from '../../../utils/formatters/transactionRequest.js'
 import { getAction } from '../../../utils/getAction.js'
-import type { ChainEIP712 } from '../types/chain.js'
+import type { ChainEIP712 } from '../types.js'
 import {
   type SendTransactionErrorType,
   type SendTransactionParameters,
