@@ -14,9 +14,12 @@ import type { IsUndefined, Prettify } from '../types/utils.js'
 import type { FormattedBlock } from '../utils/formatters/block.js'
 import type { SerializeTransactionFn } from '../utils/transaction/serializeTransaction.js'
 
+type Custom = { [key: string]: unknown }
+
 export type Chain<
   formatters extends ChainFormatters | undefined = ChainFormatters | undefined,
 > = {
+  custom?: Custom | undefined
   /** Collection of block explorers */
   blockExplorers?:
     | {
@@ -239,6 +242,21 @@ export type ExtractChainFormatterReturnType<
     ? fallback
     : ReturnType<formatter['format']>
   : fallback
+
+export type IsUnknown<type> = unknown extends type ? true : false
+
+export type IsNever<type> = [type] extends [never] ? true : false
+
+export type IsNarrowable<type, type2> = IsUnknown<type> extends true
+  ? false
+  : undefined extends type
+    ? false
+    : IsNever<
+          (type extends type2 ? true : false) &
+            (type2 extends type ? false : true)
+        > extends true
+      ? false
+      : true
 
 export type DeriveChain<
   chain extends Chain | undefined,

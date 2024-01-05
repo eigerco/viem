@@ -32,7 +32,7 @@ export const formatters = {
     } {
       const transactions = args.transactions?.map((transaction) => {
         if (typeof transaction === 'string') return transaction
-        const formatted = formatters.transaction.format(
+        const formatted = formatters.transaction?.format(
           transaction as ZkSyncRpcTransaction,
         ) as ZkSyncTransaction
         if (formatted.typeHex === '0x71') formatted.type = 'eip712'
@@ -135,10 +135,12 @@ export const formatters = {
               : {}),
             ...(args.factoryDeps ? { factoryDeps: args.factoryDeps } : {}),
             ...(args.customSignature
-              ? { customSignature: args.customSignature }
+              ? {
+                  customSignature: Array.from(hexToBytes(args.customSignature)),
+                }
               : {}),
           },
-          type: args.type === 'eip712' ? '0x71' : '0xff',
+          type: '0x71',
         } as ZkSyncRpcTransactionRequest
       return {} as ZkSyncRpcTransactionRequest
     },

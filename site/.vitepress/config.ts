@@ -84,6 +84,11 @@ export default defineConfig({
             text: 'OP Stack',
             link: '/op-stack',
           },
+          {
+            activeMatch: '/zksync',
+            text: 'zkSync',
+            link: '/zksync',
+          },
         ],
       },
       {

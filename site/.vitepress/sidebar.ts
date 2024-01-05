@@ -925,6 +925,37 @@ export const sidebar: DefaultTheme.Sidebar = {
       ],
     },
   ],
+  '/zksync': [
+    { text: '← Viem Docs', link: '/docs/getting-started' },
+    {
+      text: 'zkSync',
+      items: [
+        {
+          text: 'Getting started',
+          link: '/zksync',
+        },
+        { text: 'Client', link: '/zksync/client' },
+        { text: 'Chains', link: '/zksync/chains' },
+      ],
+    },
+    {
+      text: 'Actions',
+      items: [
+        {
+          text: 'prepareTransactionRequest',
+          link: '/zksync/actions/prepareTransactionRequest',
+        },
+        {
+          text: 'sendTransaction',
+          link: '/zksync/actions/sendTransaction',
+        },
+        {
+          text: 'signTransaction',
+          link: '/zksync/actions/signTransaction',
+        },
+      ],
+    },
+  ],
   '/op-stack': [
     { text: '← Viem Docs', link: '/docs/getting-started' },
     {
